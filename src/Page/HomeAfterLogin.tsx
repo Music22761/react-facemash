@@ -1,5 +1,4 @@
 // import { useSearchParams } from "react-router-dom";
-import ButtonAppBar from "./Appbar";
 import Card from "@mui/material/Card";
 import picture from "../json/Picture.json";
 import userPicture from "../json/UserPicture.json";
@@ -14,25 +13,22 @@ import {
   Rating,
 } from "@mui/material";
 import React from "react";
-function HomePage() {
+import AppbarAfterLogin from "./AppbarAfterLogin";
+import {useSearchParams } from "react-router-dom";
+
+function HomePageAfterLogin() {
   const [value, setValue] = React.useState<number | null>(0);
-  //  const params = useParams();
-  // const [searchParams] = useSearchParams();
 
-  // const name = searchParams.get("name");
-  // const email = searchParams.get("email");
-  // const password = searchParams.get("password");
-  // const confirmPassword = searchParams.get("confirmPassword");
+  const [searchParams] = useSearchParams();
 
-  // console.log("this is Home");
-  // console.log(name);
-  // console.log(email);
-  // console.log(password);
-  // console.log(confirmPassword);
+  const id = Number(searchParams.get("id"));
+  const name = String(searchParams.get("name"));
+  const email = String(searchParams.get("email"));
+  const password = String(searchParams.get("password"));
 
   return (
     <>
-      <ButtonAppBar />
+      {AppbarAfterLogin(id,name,email,password)}
       <div
         style={{
           display: "flex",
@@ -72,7 +68,7 @@ function HomePage() {
               paddingLeft: "10px",
               paddingRight: "10px",
               width: "auto",
-              height: "500px",
+              height: "50vh",
             }}
           >
             <Card
@@ -120,7 +116,7 @@ function HomePage() {
               paddingLeft: "10px",
               paddingRight: "10px",
               width: "auto",
-              height: "500px",
+              height: "50vh",
             }}
           >
             <Card
@@ -167,4 +163,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default HomePageAfterLogin;

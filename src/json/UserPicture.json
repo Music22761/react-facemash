@@ -1,0 +1,26 @@
+[
+    {
+        "id":1,
+        "picture":1,
+        "user":2,
+        "score":30
+    },
+    {
+        "id":2,
+        "picture":2,
+        "user":2,
+        "score":40
+    },
+    {
+        "id":3,
+        "picture":3,
+        "user":2,
+        "score":50
+    },
+    {
+        "id":4,
+        "picture":4,
+        "user":2,
+        "score":60
+    }
+]

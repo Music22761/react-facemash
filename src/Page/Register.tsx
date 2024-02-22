@@ -66,6 +66,7 @@ function RegisterPage() {
               edge="start"
               color="inherit"
               aria-label="menu"
+              style={{width:'50px'}}
               // sx={{ mr: 2 }}
             >
               {/* <MenuIcon /> */}
@@ -142,8 +143,8 @@ function RegisterPage() {
             <TextField
               style={{ padding: "10px" }}
               type="password"
-              id="password"
-              label="Password"
+              id="confirmPassword"
+              label="confirmPassword"
               variant="outlined"
               ref={confirmPasswordRef}
               onChange={(event) => {
@@ -152,13 +153,9 @@ function RegisterPage() {
             />
           </div>
           <Button
-            style={{ backgroundColor: "purple" }}
+            style={{width:'100px', backgroundColor: "purple" }}
             variant="contained"
             onClick={() => {
-              // console.log("Name: " + name);
-              // console.log("Email: " + email);
-              // console.log("Password: " + password);
-              // console.log("Confirm Password: " + confirmPassword);
               btnRegister(name, email, password, confirmPassword);
               alert("Register Success!!");
             }}

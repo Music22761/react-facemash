@@ -18,7 +18,8 @@ export default function ButtonAppBar() {
             edge="start"
             color="inherit"
             aria-label="menu"
-            // sx={{ mr: 2 }}
+            style={{width:'50px'}}
+            sx={{ mr: 2 }}
           >
             <Link to={'/'}><HomeIcon/></Link>
           </IconButton>
