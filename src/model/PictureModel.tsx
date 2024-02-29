@@ -1,5 +1,6 @@
 export interface PictureGetResponse{
-    id:number
-    name:string
-    picture:string
+    id:number;
+    name:string;
+    score:number;
+    user_id:number;
 }

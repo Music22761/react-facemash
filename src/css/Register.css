@@ -1,0 +1,40 @@
+body{
+    display: flex;
+    background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4208828f-619a-40a0-beed-3e09e819ceb7/dedrkmt-35e67bac-ac1a-46b4-8420-48c238631751.jpg/v1/fill/w_1920,h_1080,q_75,strp/windows_xp_4k_wallpaper_by_karara160_dedrkmt-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTA4MCIsInBhdGgiOiJcL2ZcLzQyMDg4MjhmLTYxOWEtNDBhMC1iZWVkLTNlMDllODE5Y2ViN1wvZGVkcmttdC0zNWU2N2JhYy1hYzFhLTQ2YjQtODQyMC00OGMyMzg2MzE3NTEuanBnIiwid2lkdGgiOiI8PTE5MjAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.ta215X7dCDArGfd9B49aBasvZW6Qkb8F2P1uu5CEP88);
+    object-fit: cover;
+    justify-content: center;
+    margin-top: 5vh;
+}
+
+.input{
+    border: 2px solid black;
+    border-radius: 30px;
+    width: 80%;
+    text-align: center;
+    height: 5vh;
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif;  
+}
+
+.button{
+    background-color: purple;
+    width: 30%;
+    height: 5vh;
+    border: 2px solid purple;
+    border-radius: 30px;
+    color: white;
+    text-align: center;
+    font-size: large;
+    font-family: Arial, Helvetica, sans-serif; 
+}
+
+.card{
+    display: flex;
+    border: 2px solid pink;
+    border-radius: 30px;
+    text-align: center;
+    align-items: center;
+    flex-direction: column;
+    width: 50vh;
+    height: 80vh;  
+}

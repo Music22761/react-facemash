@@ -5,26 +5,22 @@ import {
   Typography,
   Card,
   Divider,
-  TextField,
   Button,
-  // FilledInput,
-  // FormControl,
-  // InputAdornment,
-  // InputLabel,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import HomeIcon from "@mui/icons-material/Home";
-import { Link, useNavigate, } from "react-router-dom";
-import { useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+// import { useRef } from "react";
+
+import "../css/Register.css";
 
 function RegisterPage() {
-  // const [name,setName] = useState();
   const navigate = useNavigate();
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  // const nameRef = useRef<HTMLInputElement>(null);
+  // const emailRef = useRef<HTMLInputElement>(null);
+  // const passwordRef = useRef<HTMLInputElement>(null);
+  // const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   let name = "";
   let email = "";
@@ -43,8 +39,7 @@ function RegisterPage() {
     console.log(password);
     console.log(confirmPassword);
 
-    navigateTo(name,email,password,confirmPassword)
-    
+    navigateTo(name, email, password, confirmPassword);
   }
 
   function navigateTo(
@@ -53,117 +48,102 @@ function RegisterPage() {
     password: string,
     confirmPassword: string
   ) {
-    navigate(`/?name=${name}&email=${email}&password=${password}&confirmPassword=${confirmPassword}`)
+    navigate(
+      `/?name=${name}&email=${email}&password=${password}&confirmPassword=${confirmPassword}`
+    );
   }
 
   return (
     <>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="fixed" style={{ backgroundColor: "pink" }}>
-          <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              style={{width:'50px'}}
-              // sx={{ mr: 2 }}
-            >
-              {/* <MenuIcon /> */}
-              <Link to={"/"}>
-                <HomeIcon />
-              </Link>
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </Box>
+      <body>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="fixed" style={{ backgroundColor: "pink" }}>
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                style={{ width: "50px" }}
+              >
+                <Link to={"/"}>
+                  <HomeIcon />
+                </Link>
+              </IconButton>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                News
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        </Box>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "5%",
-        }}
-      >
-        <Card
-          style={{
-            borderRadius: "30px",
-            textAlign: "center",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "pink",
-            width: "50vh",
-            height: "80vh",
-          }}
-        >
-          <h1>Sign In</h1>
-          <Divider />
-          <h2>กรุณาลงทะเบียน</h2>
-          <div>
+          <Card className="card" style={{backgroundColor:'pink',borderRadius:'30px'}}>
+            <h1>Sign In</h1>
+            <Divider />
+            <h2>กรุณาลงทะเบียน</h2>
+            <div>
+              <input
+                className="input"
+                type="text"
+                id="name"
+                placeholder="Name"
+                onChange={(event) => {
+                  name = event.target.value;
+                }}
+              />
+
+              <input
+                className="input"
+                type="email"
+                id="email"
+                placeholder="Email"
+                onChange={(event) => {
+                  email = event.target.value;
+                }}
+              />
+
+              <input
+                className="input"
+                type="password"
+                id="password"
+                placeholder="Password"
+                onChange={(event) => {
+                  password = event.target.value;
+                }}
+              />
+
+              <input
+                className="input"
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                onChange={(event) => {
+                  confirmPassword = event.target.value;
+                }}
+              />
+            </div>
             
-            <TextField
-              style={{ padding: "10px" }}
-              type="text"
-              id="name"
-              label="Name"
-              variant="outlined"
-              ref={nameRef}
-              onChange={(event) => {
-                name = event.target.value;
+            <Button
+              style={{ borderRadius:'30px',width: "100px", backgroundColor: "purple" }}
+              variant="contained"
+              onClick={() => {
+                if (name && email && password && confirmPassword) {
+                  if (password == confirmPassword) {
+                    btnRegister(name, email, password, confirmPassword);
+                    alert("Register Success!!");
+                  }else{
+                    alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน");
+                  }
+                }else{
+                  alert("กรุณาใส่ข้อมูลให้ครบทุกช่อง");
+                }
+                
               }}
-            />
-            <TextField
-              style={{ padding: "10px" }}
-              type="email"
-              id="email"
-              label="Email"
-              variant="outlined"
-              ref={emailRef}
-              onChange={(event) => {
-                email = event.target.value;
-              }}
-            />
-            <TextField
-              style={{ padding: "10px" }}
-              type="password"
-              id="password"
-              label="Password"
-              variant="outlined"
-              ref={passwordRef}
-              onChange={(event) => {
-                password = event.target.value;
-              }}
-            />
-
-            <TextField
-              style={{ padding: "10px" }}
-              type="password"
-              id="confirmPassword"
-              label="confirmPassword"
-              variant="outlined"
-              ref={confirmPasswordRef}
-              onChange={(event) => {
-                confirmPassword = event.target.value;
-              }}
-            />
-          </div>
-          <Button
-            style={{width:'100px', backgroundColor: "purple" }}
-            variant="contained"
-            onClick={() => {
-              btnRegister(name, email, password, confirmPassword);
-              alert("Register Success!!");
-            }}
-          >
-            Sign In
-          </Button>
-        </Card>
-      </div>
+            >
+              Sign In
+            </Button>
+          </Card>
+      </body>
     </>
   );
 }
