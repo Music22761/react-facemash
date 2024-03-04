@@ -8,7 +8,6 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -35,7 +34,7 @@ function RankPage() {
   
     useEffect(() => {
       autoLoad(id);
-    }, []);
+    }, [id]);
   
     const autoLoad = async (id:number) => {
       setLoading(true);
@@ -166,18 +165,18 @@ function RankPage() {
                   <ListItemAvatar>
                     <Avatar
                       style={{
-                        marginRight: "10vh",
                         border: "5px solid black",
                         width: "20vh",
                         height: "20vh",
                       }}
-                      src={e.name}
+                      src={e.path}
                     ></Avatar>
                   </ListItemAvatar>
-                  <ListItemText
-                    primary={e.user_id}
-                    secondary={e.score}
-                  />
+                  <Typography variant="h5">
+                    Name:{e.name} <br />
+                    Score:{e.score} <br />
+                    Owner:{user?.[0]?.email}
+                  </Typography>
                 </ListItem>
               ))}
             </List>

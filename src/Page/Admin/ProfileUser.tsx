@@ -43,7 +43,7 @@ function ProfileUserPage() {
     setLoading(true);
     try {
       const resUser = await services.getUserById(id);
-      const resPic = await services.getAllPicture();
+      const resPic = await services.getPictureByUID(id);
       setUser(resUser);
       serPicture(resPic);
       console.log("AutoLoad Appbar");
@@ -206,15 +206,15 @@ function ProfileUserPage() {
                   <ListSubheader component="div">Pictures</ListSubheader>
                 </ImageListItem>
                 {picture?.map((e) => (
-                  <ImageListItem key={e.name}>
+                  <ImageListItem key={e.id}>
                     <img
-                      srcSet={e.name}
-                      src={e.name}
-                      alt={e.name}
+                      srcSet={e.path}
+                      src={e.path}
+                      alt={e.path}
                       loading="lazy"
                     />
                     <ImageListItemBar
-                      title={user?.[0]?.name}
+                      title={e.name}
                       subtitle={e.score}
                       actionIcon={
                         <IconButton

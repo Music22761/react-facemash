@@ -3,4 +3,5 @@ export interface PictureGetResponse{
     name:string;
     score:number;
     user_id:number;
+    path:string;
 }

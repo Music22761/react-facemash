@@ -16,7 +16,6 @@ import {
   ListItem,
   ListItemAvatar,
   Avatar,
-  ListItemText,
   AppBar,
   Box,
   Toolbar,
@@ -169,7 +168,6 @@ export default function AdminHome() {
                     >
                       <Avatar
                         style={{
-                          marginRight: "10vh",
                           border: "5px solid black",
                           width: "20vh",
                           height: "20vh",
@@ -178,11 +176,10 @@ export default function AdminHome() {
                       ></Avatar>
                     </IconButton>
                   </ListItemAvatar>
-                  <ListItemText
-                    style={{}}
-                    primary={e.name}
-                    secondary={e.email}
-                  />
+                  <Typography variant="h5">
+                    Name:{e.name} <br />
+                    Email:{e.email}
+                  </Typography>
                 </ListItem>
               ))}
             </List>

@@ -45,13 +45,13 @@ function LoginPage() {
     }
   };
 
-  function navigateTo(id: number,role:number) {
+  function navigateTo(id: number, role: number) {
     console.log("navigate ID" + id);
-    
+
     if (role == 1) {
       navigate(`/homeAfterLog?id=${id}&role=${role}`);
-    }else{
-      navigate(`/adminHome?id=${id}&role=${role}`)
+    } else {
+      navigate(`/adminHome?id=${id}&role=${role}`);
     }
   }
 
@@ -83,13 +83,13 @@ function LoginPage() {
               </Toolbar>
             </AppBar>
           </Box>
-          
+
           <div
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: "5%",
+              marginTop: "10vh",
             }}
           >
             <Card
@@ -153,7 +153,7 @@ function LoginPage() {
                         if (String(e.password) === String(password)) {
                           console.log("Password Chk");
 
-                          navigateTo(e.id,e.role);
+                          navigateTo(e.id, e.role);
                           alert("Login Success!! Welcome to FaceMash");
                         }
                       }

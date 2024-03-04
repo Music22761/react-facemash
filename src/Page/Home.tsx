@@ -1,80 +1,78 @@
-// import { useSearchParams } from "react-router-dom";
 import ButtonAppBar from "./Appbar";
 import Card from "@mui/material/Card";
-import picture from "../json/Picture.json";
-import userPicture from "../json/UserPicture.json";
-// import user from "../json/User.json";
 
 import {
   CardMedia,
   CardContent,
   Typography,
-  CardActions,
-  Box,
-  Rating,
+  CircularProgress,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Service } from "../api/service";
+import { PictureGetResponse } from "../model/PictureModel";
 function HomePage() {
-  const [value, setValue] = React.useState<number | null>(0);
-  //  const params = useParams();
-  // const [searchParams] = useSearchParams();
+  const [picture, setPicture] = useState<PictureGetResponse[]>();
+  const [loading, setLoading] = useState(false);
 
-  // const name = searchParams.get("name");
-  // const email = searchParams.get("email");
-  // const password = searchParams.get("password");
-  // const confirmPassword = searchParams.get("confirmPassword");
+  useEffect(() => {
+    autoLoad();
+    const interval = setInterval(autoLoad, 10000); // โหลดข้อมูลใหม่ทุก 10 วินาที
+    return () => clearInterval(interval);
+  }, []);
 
-  // console.log("this is Home");
-  // console.log(name);
-  // console.log(email);
-  // console.log(password);
-  // console.log(confirmPassword);
+  const autoLoad = async () => {
+    setLoading(true);
+    try {
+      const res = await services.getAllPicture();
+      setPicture(res);
+    } catch (error) {
+      console.error("Failed to load data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const getRandomPicture = () => {
+    if (!picture || picture.length === 0) return null; // ตรวจสอบว่ามีรูปในอาร์เรย์หรือไม่
+    const randomIndex = Math.floor(Math.random() * picture.length);
+    return picture[randomIndex];
+  };
+
+  // async function delay(ms: number) {
+  //   return await new Promise((resolve) => setTimeout(resolve, ms));
+  // }
+
+  // function chk(id: number) {
+  //   const ran = getRandomPicture();
+  //   // const bln = true
+
+  //   if (ran?.id != id) {
+  //     return ran;
+  //   } else {
+  //     chk;
+  //   }
+  // }
+
+  const ranPic1 = getRandomPicture();
+  const ranPic2 = getRandomPicture();
+
+
+
+  const services = new Service();
 
   return (
     <>
-      <ButtonAppBar />
-      <div
-        style={{
-          display: "flex",
-          padding: "15vh",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+    <ButtonAppBar />
+      {loading ? (
+        <div>
+          <CircularProgress />
+        </div>
+      ) : (
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            textAlign: "center",
-            alignItems: "center",
-            width: "auto",
-          }}
         >
-          <div
-            style={{
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              justifyContent: "center",
-              textAlign: "start",
-              width: "300px",
-            }}
-          >
-            <h2>About</h2>
-            <p>
-              Catmash <br />
-              มีลักษณะเป็นเกมการจับคู่รูปภาพของแมวทั้งสองแล้วให้ผู้ใช้โหวตให้คะแนน
-            </p>
-          </div>
-          <span style={{ justifyContent: "space-between" }}></span>
-          <div
-            style={{
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              width: "auto",
-              height: "500px",
-            }}
-          >
+          
+          <div style={{display:'flex',flexDirection:'row',marginTop:'15vh',textAlign:'center',alignItems:'center'}}>
             <Card
               sx={{
                 maxWidth: 600,
@@ -86,43 +84,28 @@ function HomePage() {
                 component="img"
                 alt="green iguana"
                 height="200"
-                image={picture[1].picture}
+                image={ranPic1?.path}
               />
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {picture[1].name}
+                <Typography
+                  style={{ textAlign: "center"}}
+                  gutterBottom
+                  variant="h5"
+                  component="div"
+                >
+                  {ranPic1?.name} <br />
+                  {ranPic1?.score}
                 </Typography>
               </CardContent>
-              <CardActions style={{justifyContent:'space-between'}}>
-
-              <h3>{userPicture[1].score}</h3>
-
-              <Box
-                  sx={{
-                    "& > legend": { mt: 2 },
-                  }}
-                >
-                  <Rating
-                    size="large"
-                    name="score"
-                    value={value}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
-                  />
-                </Box>
-              </CardActions>
             </Card>
-          </div>
-          <span style={{ justifyContent: "space-between" }}></span>
-          <div
-            style={{
-              paddingLeft: "10px",
-              paddingRight: "10px",
-              width: "auto",
-              height: "500px",
-            }}
-          >
+            <Typography
+              style={{ textAlign: "center",marginLeft:'5%',marginRight:'5%'}}
+              gutterBottom
+              variant="h1"
+              component="div"
+            >
+              VS
+            </Typography>
             <Card
               sx={{
                 maxWidth: 600,
@@ -134,35 +117,23 @@ function HomePage() {
                 component="img"
                 alt="green iguana"
                 height="200"
-                image={picture[0].picture}
+                image={ranPic2?.path}
               />
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {picture[0].name}
+                <Typography
+                  style={{ textAlign: "center" }}
+                  gutterBottom
+                  variant="h5"
+                  component="div"
+                >
+                  {ranPic2?.name} <br />
+                  {ranPic2?.score}
                 </Typography>
               </CardContent>
-              <CardActions style={{justifyContent:"space-between"}}>
-                <h3>{userPicture[0].score}</h3>
-                <Box
-                  sx={{
-                    "& > legend": { mt: 2 },
-                  }}
-                >
-                  <Rating
-                    size="large"
-                    name="score"
-                    value={value}
-                    onChange={(event, newValue) => {
-                      setValue(newValue);
-                    }}
-                  />
-                </Box>
-
-              </CardActions>
             </Card>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

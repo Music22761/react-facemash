@@ -130,7 +130,7 @@ function ChartPicture() {
             <Card style={{width:'50%',marginBlock:'5%',marginLeft:'5%'}}>
               <CardMedia
                 component="img"
-                image={picture?.[0].name}
+                image={picture?.[0].path}
                 alt="Cat"
               />
             </Card>

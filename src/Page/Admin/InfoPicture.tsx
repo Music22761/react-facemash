@@ -166,7 +166,7 @@ function InfoPicture() {
                 height: "100%", // ให้ภาพเต็มพื้นที่ของ Card
               }}
               image={
-                picture?.[0]?.name
+                picture?.[0]?.path
               }
               alt="Selected Image"
             />
