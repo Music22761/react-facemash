@@ -12,19 +12,18 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect,useState } from "react";
 import "../css/Login.css";
 import { Service } from "../api/service";
 import { UsersGetRespose } from "../model/UserModel";
+import LockIcon from "@mui/icons-material/Lock";
+import EmailIcon from "@mui/icons-material/Email";
 
 function LoginPage() {
   const navigate = useNavigate();
   const services = new Service();
   const [users, setUsers] = useState<UsersGetRespose[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
 
   let email = "";
   let password = "";
@@ -105,34 +104,44 @@ function LoginPage() {
             >
               <h1>Log in</h1>
               <Divider />
+
               <TextField
-                style={{
-                  padding: "10px",
-                  textAlign: "center",
-                  alignItems: "center",
-                }}
+                // inputRef={emailRef}
+                placeholder="Email"
+                sx={{ m: 1, width: "90%" }}
                 type="email"
-                id="email"
-                label="Email"
-                variant="outlined"
-                ref={emailRef}
-                onChange={(e) => {
+                autoComplete="current-email"
+                onChange={(e)=>{
                   email = e.target.value;
-                  console.log("Value: " + e.target.value);
-                  console.log("Input E: " + password);
+                }}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <EmailIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
                 }}
               />
+
               <TextField
-                style={{ padding: "10px" }}
+                // inputRef={passwordRef}
+                placeholder="Password"
+                sx={{ m: 1, width: "90%" }}
                 type="password"
-                id="password"
-                label="Password"
-                variant="outlined"
-                ref={passwordRef}
-                onChange={(e) => {
+                autoComplete="current-password"
+                onChange={(e)=>{
                   password = e.target.value;
-                  console.log("Value: " + e.target.value);
-                  console.log("Input P: " + password);
+                }}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <LockIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
                 }}
               />
 

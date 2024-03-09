@@ -16,8 +16,8 @@ function HomePage() {
 
   useEffect(() => {
     autoLoad();
-    const interval = setInterval(autoLoad, 10000); // โหลดข้อมูลใหม่ทุก 10 วินาที
-    return () => clearInterval(interval);
+    // const interval = setInterval(autoLoad, 10000); // โหลดข้อมูลใหม่ทุก 10 วินาที
+    // return () => clearInterval(interval);
   }, []);
 
   const autoLoad = async () => {

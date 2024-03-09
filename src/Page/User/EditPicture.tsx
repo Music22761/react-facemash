@@ -177,7 +177,7 @@ function EditPicture() {
           variant="h4"
           style={{ marginTop: "20px", marginBottom: "20px" }}
         >
-          เพิ่มรูปภาพ
+          เปลี่ยนรูปภาพ
         </Typography>
 
         <Card style={{ width: '60%', height: '60%', display: 'flex',flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}>
@@ -191,7 +191,7 @@ function EditPicture() {
               }}
               image={
                 imageUrl ||
-                picture?.[0]?.name
+                picture?.[0]?.path
               }
               alt="Selected Image"
             />

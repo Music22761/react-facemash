@@ -72,7 +72,7 @@ export default function AppbarAfterLogin(id: number) {
                 </Link>
               </IconButton>
               <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                {user?.map((e)=>(e.name))}
+                {user?.[0]?.name}
               </Typography>
               <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 {user?.map((e)=>(e.email))}

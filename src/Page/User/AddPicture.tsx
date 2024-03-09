@@ -18,6 +18,7 @@ import { useState } from "react";
 // import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 // import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Service } from "../../api/service";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -34,10 +35,14 @@ const VisuallyHiddenInput = styled("input")({
 function AddPicture() {
   const [searchParams] = useSearchParams();
   const [imageUrl, setImageUrl] = useState(null);
+  const [namePic, setNamePic] = useState(null);
   const [upPic, setUpPic] = useState();
   const navigate = useNavigate();
 
   const id = Number(searchParams.get("id"));
+  const services = new Service();
+
+  let name = "";
 
   function navigateTo() {
     navigate(-1);
@@ -46,9 +51,20 @@ function AddPicture() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
-    setUpPic(file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setUpPic(formData);
     setImageUrl(imageUrl);
   };
+
+  function btnAddPicture() {
+    console.log("Pic: "+upPic);
+    console.log("ID: "+id);
+    console.log("NamePic: "+namePic);
+    uploadImageOnFireBase(upPic, id, namePic);
+  }
 
   return (
     <>
@@ -123,7 +139,16 @@ function AddPicture() {
           เพิ่มรูปภาพ
         </Typography>
 
-        <Card style={{ width: '60%', height: '60%', display: 'flex',flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}>
+        <Card
+          style={{
+            width: "60%",
+            height: "60%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Card sx={{ width: "85%" }}>
             <CardMedia
               component="img"
@@ -146,7 +171,7 @@ function AddPicture() {
             variant="contained"
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
-            style={{marginTop:'20px'}}
+            style={{ marginTop: "20px" }}
           >
             Select Picture
             <VisuallyHiddenInput
@@ -157,18 +182,69 @@ function AddPicture() {
           </Button>
         </Card>
 
-        <TextField margin="normal" name="name" label="Name" id="name" />
+        <TextField
+          margin="normal"
+          name="name"
+          label="Name"
+          id="name"
+          onChange={(e) => {
+            name = e.target.value
+            // console.log(name+" Type "+typeof(name));
+            
+            setNamePic(name)
+          }}
+        />
 
         <Button
           variant="contained"
           style={{ width: "150px" }}
-          onClick={() => {}}
+          onClick={() => {
+            if (imageUrl) {
+              btnAddPicture();
+            }else{
+              alert("ใส่รูปก่อน")
+            }
+          }}
         >
           Add Picture
         </Button>
       </Card>
     </>
   );
+
+  async function addPicture(id: number, name: string, picture: string) {
+    const body = {
+      name: name,
+      score: 0,
+      user_id: id,
+      path: picture,
+    };
+
+    console.log("Body");
+
+    console.log(body.name);
+    console.log(body.score);
+    console.log(body.user_id);
+    console.log(body.path, typeof body.path);
+
+    console.log("Body :" + body);
+    await services.postPicture(body);
+  }
+
+  async function uploadImageOnFireBase(
+    data: FormData,
+    id: number,
+    name: string
+  ) {
+    console.log("ImageOnfireBase: " + data);
+
+    const res = await services.postPictureOnFireBase(data);
+    const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
+    //  setUserImage(img[1])
+    console.log("Upload Image On Fire Base: " + img[1]);
+
+    await addPicture(id, name, String(img[1]));
+  }
 }
 
 export default AddPicture;
