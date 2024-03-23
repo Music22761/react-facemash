@@ -272,12 +272,12 @@ function RegisterPage() {
     
    const res = await services.postPictureOnFireBase(data);
    const img = String(res).split(" ") //แบ่งตรงเคื่องหมายวรรคตอน
+  //  console.log("URL: "+res.data["url"]);
+   
   //  setUserImage(img[1])
     console.log("Upload Image On Fire Base: "+ img[1]);
 
    await register(name,email,password,String(img[1]))
-
-    
   }
 }
 

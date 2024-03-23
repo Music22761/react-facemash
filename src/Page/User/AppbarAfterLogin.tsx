@@ -7,16 +7,22 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-import { Link, useNavigate } from "react-router-dom";
-import { Service } from "../../api/service";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+// import { Service } from "../../api/service";
 import { useEffect, useState } from "react";
 import { UsersGetRespose } from "../../model/UserModel";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Service } from "../../api/service";
 
-export default function AppbarAfterLogin(id: number) {
-  const [user, setUser] = useState<UsersGetRespose[]>();
+export default function AppbarAfterLogin(id:number) {
+  // const user:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<UsersGetRespose[]>();
+  // const [searchParams] = useSearchParams();
+  // const id = searchParams.get("id");
+
+  const services = new Service();
   
   function btnProfile(id:number) {
     console.log("Btn Profile");
@@ -24,10 +30,10 @@ export default function AppbarAfterLogin(id: number) {
   }
 
   useEffect(() => {
-    autoLoad(id);
-  }, [id]);
+    autoLoad();
+  }, []);
 
-  const autoLoad = async (id: number) => {
+  const autoLoad = async () => {
     setLoading(true);
     try {
       const res = await services.getUserById(id);
@@ -43,7 +49,7 @@ export default function AppbarAfterLogin(id: number) {
     }
   };
 
-  const services = new Service();
+  // const services = new Service();
 
   function navigateTo(id: number) {
     navigate(`/profile?id=${id}`);
@@ -73,9 +79,11 @@ export default function AppbarAfterLogin(id: number) {
               </IconButton>
               <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 {user?.[0]?.name}
+                {/* {user.name} */}
               </Typography>
               <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 {user?.map((e)=>(e.email))}
+                {/* {user.email} */}
               </Typography>
               <span></span>
 
@@ -95,7 +103,7 @@ export default function AppbarAfterLogin(id: number) {
 
               <div style={{ padding: "5px" }}></div>
 
-              <Link to={"/"}>
+              <Link to={"/"} onClick={localStorage.clear}>
                 <IconButton
                   size="large"
                   edge="start"
@@ -104,6 +112,7 @@ export default function AppbarAfterLogin(id: number) {
                   style={{ color: "red", width: "50px" }}
                   sx={{ mr: 2 }}
                 >
+                  
                   <LogoutIcon />
                 </IconButton>
               </Link>

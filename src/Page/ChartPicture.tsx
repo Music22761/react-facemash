@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { LineChart } from "@mui/x-charts/LineChart";
 import { Box } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
@@ -17,6 +16,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Service } from "../api/service";
 import { UsersGetRespose } from "../model/UserModel";
 import { PictureGetResponse } from "../model/PictureModel";
+import { VoteChart7Day } from "../model/VoteModel";
+import { BarChart } from "@mui/x-charts/BarChart";
 // import { Score } from "@mui/icons-material";
 
 function ChartPicture() {
@@ -24,6 +25,16 @@ function ChartPicture() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UsersGetRespose[]>();
   const [picture, setPicture] = useState<PictureGetResponse[]>();
+  const [voteScore, setVoteScore] = useState<VoteChart7Day>();
+  const scoreData = voteScore?.voteChart?.map((item) => item?.[0]?.score) || [];
+  const dateTimes =
+    voteScore?.voteChart?.map((item) => {
+      const dateTime = new Date(item?.[0]?.date_time);
+      const day = dateTime.getDate(); // วัน
+      const month = dateTime.getMonth() + 1; // เดือน (เพิ่ม 1 เพราะเดือนเริ่มที่ 0)
+      const year = dateTime.getFullYear(); // ปี
+      return `${day}-${month}-${year}`; // รวมวัน เดือน ปี เข้าด้วยกัน
+    }) || [];
 
   const navigate = useNavigate();
 
@@ -46,9 +57,18 @@ function ChartPicture() {
     setLoading(true);
     try {
       const res = await services.getUserById(id);
+      const resVote = await services.getPictureScore7Day(picId);
       const resPic = await services.getPictureById(picId);
       setUser(res);
       setPicture(resPic);
+      setVoteScore(resVote);
+
+      for (let index = 0; index < resVote.voteChart.length; index++) {
+        console.log("In resVote Loop");
+
+        console.log(resVote?.voteChart?.[index]?.[0].date_time);
+        // setScore([resVote?.voteChart?.[index]?.[0].score]);
+      }
     } catch (error) {
       console.error("Failed to load movie:", error);
     } finally {
@@ -127,23 +147,16 @@ function ChartPicture() {
               flexDirection: "row",
             }}
           >
-            <Card style={{width:'50%',marginBlock:'5%',marginLeft:'5%'}}>
-              <CardMedia
-                component="img"
-                image={picture?.[0].path}
-                alt="Cat"
-              />
+            <Card style={{ width: "50%", marginBlock: "5%", marginLeft: "5%" }}>
+              <CardMedia component="img" image={picture?.[0].path} alt="Cat" />
             </Card>
-            <LineChart
-              xAxis={[{ data: [1, 2, 3, 5, 8, 10, 12], label: "วันที่" }]} //กำหนดค่าแกน
+
+            <BarChart
               series={[
-                {
-                  data: [1, 5, 10],
-                },
+                { data: scoreData }
               ]}
-              yAxis={[{ label: "คะแนน" }]}
-              width={500}
-              height={300}
+              height={290}
+              xAxis={[{ data: dateTimes, scaleType: "band" }]}
             />
           </Card>
         </div>

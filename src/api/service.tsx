@@ -1,6 +1,7 @@
 import axios from "axios";
 import { UsersGetRespose } from "../model/UserModel";
 import { PictureGetResponse } from "../model/PictureModel";
+import { VoteChart7Day, VoteModel } from "../model/VoteModel";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const HOST: string = "http://localhost:3000/";
@@ -38,7 +39,7 @@ export class Service {
     
   }
 
-  async putUserEdit(body: { name: string | undefined; email: string | undefined },id:number) {
+  async putUserEdit(body: { name: string | undefined; email: string | undefined; picture: string | undefined },id:number) {
     const url = HOST + `user/edit/${id}`;
     const response = await axios.put(url,body);
     const res = response.data
@@ -64,8 +65,8 @@ export class Service {
   async getPictureById(id: number) {
     const url = HOST + `picture/${id}`;
     const response = await axios.get(url);
-    const user: PictureGetResponse[] = response.data;
-    return user;
+    const picture: PictureGetResponse[] = response.data;
+    return picture;
   }
 
   async getPictureByUID(id: number) {
@@ -84,6 +85,67 @@ export class Service {
     return (res)
   }
 
+  async deletePictureById(id:number) {
+    const url = HOST + `picture/${id}`;
+    const response = await axios.delete(url);
+    const res = response.data
+    console.log(res);
+    
+  }
 
+  async getVoteAll() {
+    const url = HOST + `vote/`;
+    const response = await axios.get(url);
+    const vote: VoteModel[] = response.data;
+    return vote;
+  }
+
+  async getVoteById(id: number) {
+    const url = HOST + `vote/${id}`;
+    const response = await axios.get(url);
+    const user: VoteModel[] = response.data;
+    return user;
+  }
+
+  // async getPictureScore7Day(id: number) {
+  //   const url = HOST + `vote/picture/${id}`;
+  //   const response = await axios.get(url);
+  //   const user: VoteModel[] = response.data;
+  //   return user;
+  // }
+
+  async getPictureScore7Day(id: number) {
+
+      const url = HOST + `vote/picture/${id}`;
+      const response = await axios.get(url);
+      const vote7day: VoteChart7Day = response.data;
+      return vote7day;
+  }
+
+
+  async postVotePicture(body:{ user_id:number | undefined; picture_id:number | undefined; score:number | undefined}) {
+    const url = HOST + `vote/`;
+    const response = await axios.post(url,body);
+    const res = response.data
+    console.log(res);
+    return (res)
+  }
+
+  async updatePictureScore(body:{ score:number | undefined},id:number) {
+    const url = HOST + `picture/edit/${id}`;
+    const response = await axios.put(url,body);
+    const res = response.data
+    console.log(res);
+    return (res)
+  }
+
+  async deletePictureOnFirebase(path:string) {
+    const url = HOST + `image/paths?path=`+path;
+    console.log("URL: "+url);
+    const response = await axios.delete(url);
+    const res = response.data
+    console.log(res);
+    return (res)
+  }
  
 }

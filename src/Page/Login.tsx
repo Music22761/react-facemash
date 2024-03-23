@@ -161,7 +161,8 @@ function LoginPage() {
 
                         if (String(e.password) === String(password)) {
                           console.log("Password Chk");
-
+                          localStorage.clear();
+                          localStorage.setItem("objUser",JSON.stringify(e))
                           navigateTo(e.id, e.role);
                           alert("Login Success!! Welcome to FaceMash");
                         }

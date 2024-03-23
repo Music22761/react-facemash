@@ -31,7 +31,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 // import { useRef } from "react";
 
 import "../../css/Profile.css";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { UsersGetRespose } from "../../model/UserModel";
 import { Service } from "../../api/service";
 import { PictureGetResponse } from "../../model/PictureModel";
@@ -40,8 +40,10 @@ import React from "react";
 function ProfilePage() {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<UsersGetRespose[]>([]);
+  // const user: UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const [picture, setPicture] = useState<PictureGetResponse[]>([]);
-
+  const [imageUrl, setImageUrl] = useState("");
+  const [upload, setUpload] = useState("");
   const [nameS, setName] = useState(null);
   const [emailS, setEmail] = useState(null);
   const navigate = useNavigate();
@@ -58,6 +60,32 @@ function ProfilePage() {
   };
   const services = new Service();
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    //ทำไฟล์เป็น formData
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setUpload(formData);
+
+    reader.onloadend = () => {
+      setImageUrl(reader.result as string);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const openFileInput = () => {
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   let name = "";
   let email = "";
 
@@ -65,24 +93,26 @@ function ProfilePage() {
     console.log("แก้ไขข้อมูลสำเร็จ");
     console.log("name: " + name);
     console.log("email: " + email);
-    setName(name)
-    setEmail(email)
+    setName(name);
+    setEmail(email);
   }
 
   useEffect(() => {
+    // console.log("storage "+user.id);
+
     autoLoad(id);
-  }, []);
+  }, [id]);
 
   const autoLoad = async (id: number) => {
     setLoading(true);
     try {
       const resUser = await services.getUserById(id);
       setUser(resUser);
-
+      localStorage.setItem("objUser", JSON.stringify(resUser));
       const resPic = await services.getPictureByUID(id);
       setPicture(resPic);
       console.log("AutoLoad Appbar");
-      console.log(resUser);
+      // console.log(resUser);
     } catch (error) {
       console.error("Failed to load movie:", error);
     } finally {
@@ -135,9 +165,11 @@ function ProfilePage() {
                 </IconButton>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                   {user?.[0]?.name}
+                  {/* {user.name} */}
                 </Typography>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                   {user?.[0]?.email}
+                  {/* {user.email} */}
                 </Typography>
                 <span></span>
 
@@ -219,13 +251,28 @@ function ProfilePage() {
             >
               <Avatar
                 style={{
+                  marginTop: "20px",
+                  width: "150px",
+                  height: "150px",
                   border: "5px solid black",
-                  margin: "10%",
-                  width: "30vh",
-                  height: "30vh",
+                  backgroundColor: "white",
+                  cursor: "pointer",
+                  transition: "transform 0.3s ease-in-out",
                 }}
-                alt="Remy Sharp"
-                src={user?.[0]?.picture}
+                src={
+                  imageUrl ||
+                  user?.[0]?.picture ||
+                  "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"
+                }
+                alt="Selected Image"
+                onClick={openFileInput}
+              />
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
               />
 
               <div>
@@ -284,7 +331,9 @@ function ProfilePage() {
                   onClick={() => {
                     handleClickOpen();
                     // console.log(name + "/" + email);
-                    btnEdit(name,email);
+                    btnEdit(name, email);
+                    setName(name);
+                    setEmail(email);
                   }}
                 >
                   แก้ไขข้อมูล
@@ -309,7 +358,8 @@ function ProfilePage() {
                       onClick={() => {
                         handleClose();
                         console.log(nameS + "/" + emailS);
-                        edit(nameS,emailS,id)
+                        editData(upload, nameS, emailS);
+                        // edit(nameS, emailS, id);
                       }}
                       autoFocus
                     >
@@ -385,23 +435,50 @@ function ProfilePage() {
     </>
   );
 
-  async function  edit(name:string,email:string,id:number) {
-    const body = {
-      name: name,
-      email: email,
-    };
+  async function editData(data: FormData, name: string, email: string) {
+    console.log("ImageOnfireBase: " + data);
 
-    console.log("Body");
-    
-    console.log(body.name);
-    console.log(body.email);
+    console.log(user?.[0]?.picture);
+    console.log(data);
 
-    console.log("Body :"+body);
-    await services.putUserEdit(body,id);
-    autoLoad(id);
+    //Edit picture on firebase
+
+    if (user?.[0]?.picture == null) {
+      console.log("IF = Null: " + user?.[0]?.picture);
+
+      const res = await services.postPictureOnFireBase(data);
+      const img = String(res).split(" "); // แบ่งตรงเคื่องหมายวรรคตอน
+      const resUrl = String(img[1]);
+      console.log("Res URL: " + resUrl);
+      const body = {
+        name: name || undefined,
+        email: email || undefined,
+        picture: resUrl,
+      };
+
+      await services.putUserEdit(body, id);
+      await autoLoad(id);
+    } else if (user?.[0]?.picture != null) {
+      const resDel = services.deletePictureOnFirebase(
+        String(user?.[0]?.picture)
+      );
+      console.log(resDel);
+
+      // รอให้รูปถูกลบเสร็จสมบูรณ์ก่อนที่จะทำการอัปโหลดรูปใหม่
+      const res = await services.postPictureOnFireBase(data);
+      const img = String(res).split(" "); // แบ่งตรงเคื่องหมายวรรคตอน
+      const resUrl = String(img[1]);
+      console.log(resDel);
+      const body = {
+        name: name || undefined,
+        email: email || undefined,
+        picture: resUrl,
+      };
+      await services.putUserEdit(body, id);
+      await autoLoad(id);
+    }
+    // console.log("Upload Image On Fire Base: "+ img[1]);
   }
-
-
 }
 
 export default ProfilePage;
