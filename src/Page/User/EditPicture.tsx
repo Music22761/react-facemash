@@ -28,6 +28,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Service } from "../../api/service";
 import { UsersGetRespose } from "../../model/UserModel";
 import { PictureGetResponse } from "../../model/PictureModel";
+import { DeleteOutline, Edit } from "@mui/icons-material";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -43,15 +44,20 @@ const VisuallyHiddenInput = styled("input")({
 
 function EditPicture() {
   const [searchParams] = useSearchParams();
+  const userId = Number(searchParams.get("id"));
+  const picId = Number(searchParams.get("picId"));
+
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const [user, setUser] = useState<UsersGetRespose[]>();
+  const [user, setUser] = useState<UsersGetRespose[]>();
 
-  const user:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
+  // const user:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const [picture, setPicture] = useState<PictureGetResponse[]>();
   const [upPic, setUpPic] = useState();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState();
+  const [name, setName] = useState("");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -63,8 +69,6 @@ function EditPicture() {
 
   const services = new Service();
 
-  const picId = Number(searchParams.get("picId"));
-
   function navigateTo() {
     navigate(-1);
   }
@@ -73,38 +77,124 @@ function EditPicture() {
     navigate(`/chartPicture?id=${id}&picId=${picId}`);
   }
 
+  function goToHomeAfterLogin(id: number) {
+    navigate(`/homeAfterLog?id=${id}`);
+  }
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
-    setUpPic(file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setUpPic(formData);
     setImageUrl(imageUrl);
   };
 
-  async function deletePictureOnfirebase(picture_id:number) {
-    console.log("Delete Picture: "+picture_id);
-    console.log("path: "+picture?.[0]?.path);
+  async function deletePictureOnfirebase(picture_id: number) {
+    console.log("Delete Picture: " + picture_id);
+    console.log("path: " + picture?.[0]?.path);
 
-    const res = await services.deletePictureById(picture_id)
-    console.log("Log Delt"+res);
-    await services.deletePictureOnFirebase(String(picture?.[0]?.path))
-    navigateTo();
+    const resDelVote = await services.deleteVoteByPictureId(picture_id);
+    const res = await services.deletePictureById(picture_id);
+
+    console.log("Log Delt" + res);
+    console.log("Log Delt Vote" + resDelVote);
+    await services.deletePictureOnFirebase(String(picture?.[0]?.path));
+  }
+
+  async function addPicture(id: number, name: string, picture: string) {
+    const body = {
+      name: name,
+      score: 0,
+      user_id: id,
+      path: picture,
+    };
+
+    console.log("Body");
+
+    console.log(body.name);
+    console.log(body.score);
+    console.log(body.user_id);
+    console.log(body.path, typeof body.path);
+
+    console.log("Body :" + body);
+    await services.postPicture(body);
+    alert("เปลี่ยนรูปสำเร็จ");
+    autoLoad(userId, picId);
+  }
+
+  async function uploadImageOnFireBase(
+    data: FormData,
+    id: number,
+    name: string
+  ) {
+    console.log("ImageOnfireBase: " + data);
+
+    const res = await services.postPictureOnFireBase(data);
+    const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
+    //  setUserImage(img[1])
+    console.log("Upload Image On Fire Base: " + img[1]);
+
+    await addPicture(id, name, String(img[1]));
+  }
+
+  async function editPicture(data: FormData, picture_id: number, name: string) {
+
+    const resDelVote = await services.deleteVoteByPictureId(picture_id);
+    console.log(resDelVote);
+    
+    services.deletePictureOnFirebase(String(picture?.[0]?.path));
+    const res = await services.postPictureOnFireBase(data);
+    const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
+    console.log("IMG");
+    console.log(img);
+    
+    const body = {
+      name:name,
+      score:0,
+      path:String(img[1])
+    }
+    await services.updatePictureById(body,picture_id)
+  }
+
+  function titleDialog(status: number) {
+    if (status == 1) {
+      return `คุณต้องการจะ "ลบ" รูปภาพหรือไม่ ??`;
+    } else {
+      return `คุณต้องการจะ "แก้ไข" รูปภาพหรือไม่ ??`;
+    }
+  }
+
+  function textDialog(status: number) {
+    if (status == 1) {
+      return `คุณต้องการจะ "ลบ" รูปภาพหรือไม่ ??`;
+    } else {
+      return `คุณต้องการจะ "แก้ไข" รูปภาพหรือไม่ ??`;
+    }
   }
 
   useEffect(() => {
-    console.log("Local In edit: "+user.id);
-    
-    autoLoad(user.id, picId);
-  }, [user.id]);
+    console.log("Local In edit: " + userId);
+
+    autoLoad(userId, picId);
+  }, [userId]);
 
   const autoLoad = async (id: number, picId: number) => {
     console.log(id);
 
     setLoading(true);
     try {
-      // const res = await services.getUserById(id);
+      const res = await services.getUserById(id);
       const resPic = await services.getPictureById(picId);
-      // setUser(res);
+      setUser(res);
       setPicture(resPic);
+      console.log(resPic);
     } catch (error) {
       console.error("Failed to load movie:", error);
     } finally {
@@ -132,13 +222,16 @@ function EditPicture() {
                   aria-label="menu"
                   style={{ width: "50px" }}
                   sx={{ mr: 2 }}
+                  onClick={() => goToHomeAfterLogin(userId)}
                 >
-                  <Link to={"/"}>
-                    <HomeIcon />
-                  </Link>
+                  <HomeIcon />
                 </IconButton>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                  {user.name}
+                  {user?.[0]?.name}
+                </Typography>
+                <span></span>
+                <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                  เปลี่ยนรูปภาพ
                 </Typography>
                 <span></span>
 
@@ -150,7 +243,7 @@ function EditPicture() {
                   sx={{ mr: 2 }}
                   onClick={() => {
                     console.log("AppbarInProfile");
-                    goToChartPicture(user.id, picId);
+                    goToChartPicture(userId, picId);
                   }}
                 >
                   <TimelineIcon />
@@ -198,26 +291,24 @@ function EditPicture() {
               height: "80vh",
               borderRadius: "40px",
               backgroundColor: "pink",
+              minWidth: "600px",
+              padding:'1%'
+              
             }}
           >
-            <Typography
-              variant="h4"
-              style={{ marginTop: "20px", marginBottom: "20px" }}
-            >
-              เปลี่ยนรูปภาพ
-            </Typography>
-
             <Card
               style={{
-                width: "60%",
-                height: "60%",
+                width: "100%",
+                height: "80%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                borderRadius:'30px',
+                paddingTop:'1%'
               }}
             >
-              <Card sx={{ width: "85%" }}>
+              <Card sx={{ width: "95%",borderRadius:'30px' }}>
                 <CardMedia
                   component="img"
                   sx={{
@@ -236,7 +327,7 @@ function EditPicture() {
                 variant="contained"
                 tabIndex={-1}
                 startIcon={<CloudUploadIcon />}
-                style={{ marginTop: "20px" }}
+                style={{margin:'1%'}}
               >
                 Select Picture
                 <VisuallyHiddenInput
@@ -247,51 +338,88 @@ function EditPicture() {
               </Button>
             </Card>
 
-            <TextField margin="normal" name="name" label="Name" id="name" />
+            <TextField
+              margin="normal"
+              name="name"
+              label={picture?.[0]?.name}
+              id="name"
+              value={name}
+              onChange={handleNameChange}
+            />
 
             <Button
               variant="contained"
-              style={{ width: "150px" }}
+              style={{
+                width: "200px",
+                backgroundColor: "red",
+                color: "black",
+                borderRadius: "30px",
+              }}
               onClick={() => {
+                setStatus(1);
                 handleClickOpen();
-                
               }}
             >
+              <DeleteOutline />
               Delete
             </Button>
             <Dialog
-                  open={open}
-                  onClose={handleClose}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {titleDialog(Number(status))}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {textDialog(Number(status))}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>ยกเลิก</Button>
+                <Button
+                  onClick={() => {
+                    handleClose();
+
+                    if (status == 1) {
+                      console.log("Delete Picture");
+                      deletePictureOnfirebase(picId);
+                      navigateTo();
+                    } else {
+                      console.log("Name: " + name + " |Type: " + typeof name);
+                      if (name != null && name.trim() !== "") {
+                        console.log("Edit Picture");
+                        editPicture(upPic,picId,name);
+                        navigateTo();
+                      } else {
+                        alert("ใส่ชื่อก่อนจ่ะ !! :)");
+                      }
+                    }
+                  }}
+                  autoFocus
                 >
-                  <DialogTitle id="alert-dialog-title">
-                    {"คุณต้องการจะลบรูปภาพหรือไม่ ??"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                      กด ตกลง เพื่อที่จะลบ กด ยกเลิก เพื่อปิดหน้าต่าง
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleClose}>ยกเลิก</Button>
-                    <Button
-                      onClick={() => {
-                        handleClose();
-                        deletePictureOnfirebase(picId);
-                      }}
-                      autoFocus
-                    >
-                      ตกลง
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+                  ตกลง
+                </Button>
+              </DialogActions>
+            </Dialog>
 
             <Button
               variant="contained"
-              style={{ width: "150px" }}
-              onClick={() => {}}
+              style={{
+                width: "200px",
+                backgroundColor: "yellow",
+                color: "black",
+                borderRadius: "30px",
+                margin: "2%",
+              }}
+              onClick={() => {
+                setStatus(2);
+                handleClickOpen();
+              }}
             >
+              <Edit />
               Edit Picture
             </Button>
           </Card>

@@ -37,7 +37,7 @@ function ProfileUserPage() {
 
   useEffect(() => {
     autoLoad(id);
-  }, []);
+  }, [id]);
 
   const autoLoad = async (id: number) => {
     setLoading(true);
@@ -67,6 +67,10 @@ function ProfileUserPage() {
     navigate(-1);
   }
 
+  function goToHomeAfterLogin(id:number) {
+    navigate(`/homeAfterLog?id=${id}`)
+  }
+
   return (
     <>
       {loading ? (
@@ -85,10 +89,9 @@ function ProfileUserPage() {
                   aria-label="menu"
                   style={{ width: "50px" }}
                   sx={{ mr: 2 }}
+                  onClick={()=>(goToHomeAfterLogin(id))}
                 >
-                  <Link to={"/"}>
                     <HomeIcon />
-                  </Link>
                 </IconButton>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                   {user?.map((e) => e.name)}

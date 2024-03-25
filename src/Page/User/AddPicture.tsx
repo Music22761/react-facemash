@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -19,7 +19,8 @@ import { useEffect, useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Service } from "../../api/service";
 import { UsersGetRespose } from "../../model/UserModel";
-import { UserPictureResponse } from "../../model/UserPictureModel";
+import { PictureGetResponse } from "../../model/PictureModel";
+import { AddPhotoAlternate } from "@mui/icons-material";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -34,20 +35,34 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 function AddPicture() {
-  const user: UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
+  // const userStorage: UsersGetRespose = JSON.parse(
+  //   localStorage.getItem("objUser")!
+  // );
+  const [user, setUser] = useState<UsersGetRespose[]>();
   const [imageUrl, setImageUrl] = useState(null);
-  const [namePic, setNamePic] = useState(null);
+  const [namePic, setNamePic] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pic ,setPic] = useState<UserPictureResponse[]>();
+  const [pic, setPic] = useState<PictureGetResponse[]>();
   const [upPic, setUpPic] = useState();
   const navigate = useNavigate();
   const services = new Service();
 
-  let name = "";
+  const [searchParams] = useSearchParams();
+  const id = Number(searchParams.get("id"));
+
+  console.log("UserStorage: " + id);
 
   function navigateTo() {
     navigate(-1);
   }
+
+  function goToHomeAfterLogin() {
+    navigate(`/homeAfterLog?id=${id}`);
+  }
+
+  const handleNameChange = (event) => {
+    setNamePic(event.target.value);
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -60,23 +75,20 @@ function AddPicture() {
     setImageUrl(imageUrl);
   };
 
-  function btnAddPicture() {
-    console.log("Pic: " + upPic);
-    console.log("ID: " + user.id);
-    console.log("NamePic: " + namePic);
-    uploadImageOnFireBase(upPic, user.id, namePic);
-  }
-
   useEffect(() => {
-    autoLoad();
-  }, []);
+    autoLoad(id);
+  }, [id]);
 
-  const autoLoad = async () => {
+  const autoLoad = async (id: number) => {
     setLoading(true);
     try {
-      const res = await services.getPictureByUID(user.id);
+      const res = await services.getPictureByUID(id);
+      const resUser = await services.getUserById(id);
+      setUser(resUser);
       setPic(res);
-      console.log("Picture UID: "+pic?.length);
+      console.log("RES");
+      console.log(res);
+      console.log(resUser);
       
     } catch (error) {
       console.error("Failed to load movie:", error);
@@ -102,14 +114,17 @@ function AddPicture() {
                   color="inherit"
                   aria-label="menu"
                   style={{ width: "50px" }}
-                  sx={{ mr: 2 }}
+                  sx={{ mr: 2,color:'purple' }}
+                  onClick={() => goToHomeAfterLogin()}
                 >
-                  <Link to={"/"}>
-                    <HomeIcon />
-                  </Link>
+                  <HomeIcon />
                 </IconButton>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                  This is Add Picture {user.id}
+                  {user?.[0].name}
+                </Typography>
+                <span></span>
+                <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                  This is Add Picture
                 </Typography>
                 <span></span>
 
@@ -129,7 +144,7 @@ function AddPicture() {
 
                 <div style={{ padding: "5px" }}></div>
 
-                <Link to={"/"}>
+                <Link to={"/"} onClick={()=>localStorage.clear()}>
                   <IconButton
                     size="large"
                     edge="start"
@@ -155,26 +170,23 @@ function AddPicture() {
               height: "80vh",
               borderRadius: "40px",
               backgroundColor: "pink",
+              minWidth: "600px",
+              padding:'1%'
             }}
           >
-            <Typography
-              variant="h4"
-              style={{ marginTop: "20px", marginBottom: "20px" }}
-            >
-              เพิ่มรูปภาพ
-            </Typography>
-
             <Card
               style={{
-                width: "60%",
-                height: "60%",
+                width: "100%",
+                height: "80%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                borderRadius:'30px',
+                paddingTop:'1%'
               }}
             >
-              <Card sx={{ width: "85%" }}>
+              <Card sx={{width: "95%",borderRadius:'30px' }}>
                 <CardMedia
                   component="img"
                   sx={{
@@ -196,7 +208,7 @@ function AddPicture() {
                 variant="contained"
                 tabIndex={-1}
                 startIcon={<CloudUploadIcon />}
-                style={{ marginTop: "20px" }}
+                style={{ margin: "1%" }}
               >
                 Select Picture
                 <VisuallyHiddenInput
@@ -212,29 +224,35 @@ function AddPicture() {
               name="name"
               label="Name"
               id="name"
-              onChange={(e) => {
-                name = e.target.value;
-                // console.log(name+" Type "+typeof(name));
-
-                setNamePic(name);
-              }}
+              value={namePic}
+              onChange={handleNameChange}
             />
 
             <Button
               variant="contained"
-              style={{ width: "150px" }}
+              style={{ width: "200px" }}
               onClick={() => {
                 if (Number(pic?.length) < 5) {
                   if (imageUrl) {
-                    btnAddPicture();
+                    console.log("Length"+pic?.length);
+                    
+                    // btnAddPicture();
+                    if (namePic != null && namePic.trim() !== "") {
+                      console.log(namePic);
+                      
+                      uploadImageOnFireBase(upPic, id, namePic);
+                    }else{
+                      alert("ใส่ชื่อก่อน")
+                    }
                   } else {
                     alert("ใส่รูปก่อน");
                   }
-                }else{
+                } else {
                   alert("ภาพเต็มแล้ว");
                 }
               }}
             >
+              <AddPhotoAlternate/>
               Add Picture
             </Button>
           </Card>
@@ -260,8 +278,8 @@ function AddPicture() {
 
     console.log("Body :" + body);
     await services.postPicture(body);
-    alert("เพิ่มรูปภาพสำเร็จ")
-    autoLoad();
+    alert("เพิ่มรูปภาพสำเร็จ");
+    autoLoad(id);
   }
 
   async function uploadImageOnFireBase(

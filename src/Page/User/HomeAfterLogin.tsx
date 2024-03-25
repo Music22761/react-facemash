@@ -9,26 +9,27 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  AppBar,
+  IconButton,
+  Toolbar,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import AppbarAfterLogin from "./AppbarAfterLogin";
 import { Service } from "../../api/service";
-import { useSearchParams } from "react-router-dom";
-import { UsersGetRespose } from "../../model/UserModel";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { VoteModel } from "../../model/VoteModel";
 import { PictureGetResponse } from "../../model/PictureModel";
+import { UsersGetRespose } from "../../model/UserModel";
+import HomeIcon from "@mui/icons-material/Home";
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export default function HomePageAfterLogin() {
-  // const [value, setValue] = React.useState<number | null>(0);
-  const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
+  // const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
+  //ใช้ localstorage มีปัญหา
   const [picArr, setPicArr] = useState([]);
+  const [user, setUser] = useState<UsersGetRespose[]>();
   const [openDialog, setOpenDialog] = useState(false); // สถานะของ dialog
-  // const [user, setUser] = useState<UsersGetRespose[]>();
-  // const [picture, setPicture] = useState<PictureGetResponse[]>();
-  // const navigate = useNavigate();
-  console.log("Local Storeage: ",userStorage);
-  
-  
+  // console.log("Local Storeage: ",userStorage);
 
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
@@ -36,11 +37,12 @@ export default function HomePageAfterLogin() {
   const services = new Service();
 
   const id = Number(searchParams.get("id"));
-  // const role = Number(searchParams.get("role"));
+
+  const navigate = useNavigate();
 
   useEffect(() => {
-    autoLoad(userStorage.id);
-  }, [userStorage.id]);
+    autoLoad(id);
+  }, [id]);
 
   const autoLoad = async (id: number) => {
     console.log(id);
@@ -48,7 +50,9 @@ export default function HomePageAfterLogin() {
     setLoading(true);
     try {
       const res = await services.getAllPicture();
+      const resUser = await services.getUserById(id);
       // setPicture(res);
+      setUser(resUser);
       console.log(res);
 
       let currentDate = new Date();
@@ -153,7 +157,7 @@ export default function HomePageAfterLogin() {
     await services.updatePictureScore(bodyPictureLoss, loss.id); //เอาค่า vote ล่าสุดไป update ใน picture
 
     handleOpenDialog();
-    autoLoad(userStorage.id);
+    autoLoad(id);
   }
 
   function calculateScore(score: number) {
@@ -164,9 +168,14 @@ export default function HomePageAfterLogin() {
     }
   }
 
+  //Navigate
+  function btnProfile(id:number) {
+    console.log("Btn Profile");
+    navigate(`/profile?id=${id}`);
+  }
+
   return (
     <>
-      {AppbarAfterLogin(userStorage.id)}
       {loading ? (
         <>
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -175,6 +184,61 @@ export default function HomePageAfterLogin() {
         </>
       ) : (
         <div>
+          <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="fixed" style={{ backgroundColor: "pink" }}>
+            <Toolbar style={{ justifyContent: "space-between" }}>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                style={{ width: "50px" }}
+                sx={{ mr: 2 }}
+                onClick={()=>autoLoad(id)}
+              >
+                  <HomeIcon />
+              </IconButton>
+              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                {user?.[0]?.name}
+              </Typography>
+              <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                {user?.[0]?.name}
+              </Typography>
+              <span></span>
+
+              <IconButton
+                size="large"
+                edge="start"
+                aria-label="menu"
+                style={{ width: "50px", color: "blue" }}
+                sx={{ mr: 2 }}
+                onClick={() => {
+                  console.log("AppbarInProfile");
+                  btnProfile(id);
+                }}
+              >
+                <AccountCircleRoundedIcon />
+              </IconButton>
+
+              <div style={{ padding: "5px" }}></div>
+
+              <Link to={"/"} onClick={localStorage.clear}>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  style={{ color: "red", width: "50px" }}
+                  sx={{ mr: 2 }}
+                >
+                  
+                  <LogoutIcon />
+                </IconButton>
+              </Link>
+            </Toolbar>
+          </AppBar>
+        </Box>
+        
           <div
             style={{
               display: "flex",

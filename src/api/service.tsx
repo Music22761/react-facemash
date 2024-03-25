@@ -1,6 +1,6 @@
 import axios from "axios";
 import { UsersGetRespose } from "../model/UserModel";
-import { PictureGetResponse } from "../model/PictureModel";
+import { PictureGetRanking, PictureGetRankingYesterDay, PictureGetResponse } from "../model/PictureModel";
 import { VoteChart7Day, VoteModel } from "../model/VoteModel";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -62,6 +62,20 @@ export class Service {
     return pictures;
   }
 
+  async getPictureRanking() {
+    const url = HOST + `picture/rankToday`;
+    const response = await axios.get(url);
+    const pictures: PictureGetRanking = response.data;
+    return pictures;
+  }
+
+  async getPictureRankingYesterday() {
+    const url = HOST + `picture/rankYesterday`;
+    const response = await axios.get(url);
+    const pictures: PictureGetRankingYesterDay = response.data;
+    return pictures;
+  }
+
   async getPictureById(id: number) {
     const url = HOST + `picture/${id}`;
     const response = await axios.get(url);
@@ -93,6 +107,14 @@ export class Service {
     
   }
 
+  async updatePictureById(body:{ name:string | undefined; score:number | undefined; path:string|undefined},id:number) {
+    const url = HOST + `picture/edit/${id}`;
+    const response = await axios.put(url,body);
+    const res = response.data
+    console.log(res);
+    
+  }
+
   async getVoteAll() {
     const url = HOST + `vote/`;
     const response = await axios.get(url);
@@ -105,6 +127,14 @@ export class Service {
     const response = await axios.get(url);
     const user: VoteModel[] = response.data;
     return user;
+  }
+
+  async deleteVoteByPictureId(id:number) {
+    const url = HOST + `vote/edit/null/${id}`;
+    const response = await axios.put(url);
+    const res = response.data
+    console.log(res);
+    
   }
 
   // async getPictureScore7Day(id: number) {

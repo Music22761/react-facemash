@@ -221,7 +221,7 @@ function PasswordChangePage() {
                       });
                     }
                     // btnEdit(name, email, password, confirmPassword);
-                    if (password) {
+                    if (password != null && password.trim() != "") {
                       if (String(password) === String(currentPassword)) {
                         btnChangePassword(newPassword);
                         handleClickOpen();

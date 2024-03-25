@@ -1,9 +1,10 @@
 import {
-    AppBar,
+  AppBar,
   Avatar,
   Box,
   Card,
   CircularProgress,
+  Grid,
   IconButton,
   List,
   ListItem,
@@ -18,51 +19,49 @@ import { UsersGetRespose } from "../model/UserModel";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { PictureGetResponse } from "../model/PictureModel";
+import { PictureGetRanking, PictureGetRankingYesterDay } from "../model/PictureModel";
 
 function RankPage() {
-    const [user, setUser] = useState<UsersGetRespose[]>();
-    const [picture, setPicture] = useState<PictureGetResponse[]>([]);
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<UsersGetRespose[]>();
+  const [rank, setRank] = useState<PictureGetRanking[]>();
+  const [rankYester, setRankYester] = useState<PictureGetRankingYesterDay[]>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-    const [searchParams] = useSearchParams()
-    const id = Number(searchParams.get("id"));
+  const [searchParams] = useSearchParams();
+  const id = Number(searchParams.get("id"));
 
-    //Sort
-    const sortedPictures = picture.map((e) => e).sort((a, b) => b.score - a.score);
-  
-    useEffect(() => {
-      autoLoad(id);
-    }, [id]);
-  
-    const autoLoad = async (id:number) => {
-      setLoading(true);
-      try {
-        const res = await services.getUserById(id);
-        const resPic =  await services.getAllPicture();
-        setUser(res);
-        setPicture(resPic);
-        console.log("AutoLoad Appbar");
-        console.log(res);
-        
-        
-      } catch (error) {
-        console.error("Failed to load movie:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    const services = new Service();
-  
-    function navigateTo() {
-      navigate(-1);
+  useEffect(() => {
+    autoLoad(id);
+  }, [id]);
+
+  const autoLoad = async (id: number) => {
+    setLoading(true);
+    try {
+      const res = await services.getUserById(id);
+      const resRank = await services.getPictureRanking();
+      const resRankYesterday = await services.getPictureRankingYesterday();
+      setUser(res);
+      setRank(resRank);
+      setRankYester(resRankYesterday);
+      console.log("AutoLoad Appbar");
+      // console.log(resRank);
+    } catch (error) {
+      console.error("Failed to load movie:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const services = new Service();
+
+  function navigateTo() {
+    navigate(-1);
+  }
 
   return (
     <>
-        {loading ? (
+      {loading ? (
         <div style={{ display: "flex", flexDirection: "column" }}>
           <CircularProgress />
         </div>
@@ -87,7 +86,7 @@ function RankPage() {
                   {user?.map((e) => e.name)}
                 </Typography>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                  {user?.map((e) => e.email)}
+                  Rank Picture
                 </Typography>
                 <span></span>
 
@@ -104,7 +103,7 @@ function RankPage() {
                     navigateTo();
                   }}
                 >
-                  <ArrowBackIcon/>
+                  <ArrowBackIcon />
                 </IconButton>
 
                 <div style={{ padding: "5px" }}></div>
@@ -125,62 +124,121 @@ function RankPage() {
             </AppBar>
           </Box>
 
-          <Card
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 3, sm: 6, md: 12 }}
             style={{
-              width: "70vh",
-              alignItems: "center",
+              width:'65vw',
               justifyContent: "center",
-              marginTop: "10vh",
-              padding: "5%",
-              backgroundColor: "pink",
+              alignContent: "center",
+              marginTop: "5vh",
             }}
           >
-            <List
-              sx={{
-                width: "100%",
-                bgcolor: "background.paper",
-              }}
+            <Grid
+              xs={6}
+              style={{ justifyContent: "center", marginBottom: "5%" }}
             >
-              <Typography
-                variant="h3"
+              <Card
                 style={{
+                  width: "50%",
+                  alignItems: "center",
+                  justifyContent: "center",
                   textAlign: "center",
-                  marginTop: "5vh",
-                  marginBottom: "5vh",
+                  padding: "5%",
+                  backgroundColor: "pink",
+                  minWidth: "400px",
                 }}
               >
-                Rank Picture
-              </Typography>
-
-              {sortedPictures?.map((e) => (
-                
-                <ListItem
-                  style={{
-                    backgroundColor: "pink",
-                    borderRadius: "30px",
-                    border: "2px solid grey",
-                    marginBottom: "5%",
+                <Typography variant="h4">Today</Typography>
+                <List
+                  sx={{
+                    width: "100%",
+                    bgcolor: "background.paper",
+                    overflowY: "auto",
+                    maxHeight: "60vh",
                   }}
                 >
-                  <ListItemAvatar>
-                    <Avatar
+                  {rank?.map((e) => (
+                    <ListItem
                       style={{
-                        border: "5px solid black",
-                        width: "20vh",
-                        height: "20vh",
+                        backgroundColor: "pink",
+                        borderRadius: "30px",
+                        border: "2px solid grey",
+                        marginBottom: "5%",
                       }}
-                      src={e.path}
-                    ></Avatar>
-                  </ListItemAvatar>
-                  <Typography variant="h5">
-                    Name:{e.name} <br />
-                    Score:{e.score} <br />
-                    Owner:{user?.[0]?.email}
-                  </Typography>
-                </ListItem>
-              ))}
-            </List>
-          </Card>
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          style={{
+                            border: "5px solid black",
+                            width: "15vh",
+                            height: "15vh",
+                          }}
+                          src={e.path}
+                        ></Avatar>
+                      </ListItemAvatar>
+                      <Typography variant="h5">
+                        Name:{e.name}
+                        <br />
+                        Score:{e.score} <br />
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              </Card>
+            </Grid>
+            <Grid xs={6}>
+              <Card
+                style={{
+                  width: "50%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  padding: "5%",
+                  backgroundColor: "pink",
+                  minWidth: "400px",
+                }}
+              >
+                <Typography variant="h4">Yesterday</Typography>
+                <List
+                  sx={{
+                    width: "100%",
+                    bgcolor: "background.paper",
+                    overflowY: "auto",
+                    maxHeight: "60vh",
+                  }}
+                >
+                  {rankYester?.map((e) => (
+                    <ListItem
+                      style={{
+                        backgroundColor: "pink",
+                        borderRadius: "30px",
+                        border: "2px solid grey",
+                        marginBottom: "5%",
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          style={{
+                            border: "5px solid black",
+                            width: "15vh",
+                            height: "15vh",
+                          }}
+                          src={e.path}
+                        ></Avatar>
+                      </ListItemAvatar>
+                      <Typography variant="h5">
+                        Name:{e.name}
+                        <br />
+                        Score:{e.score} <br />
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              </Card>
+            </Grid>
+          </Grid>
         </div>
       )}
     </>

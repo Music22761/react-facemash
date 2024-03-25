@@ -37,19 +37,18 @@ function RegisterPage() {
   const navigate = useNavigate();
   const [imgUrl, setImgUrl] = useState(null);
   const [upload, setUpload] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   // const [userImage, setUserImage] = useState();
   const services = new Service();
- 
-  let name = "";
-  let email = "";
-  let password = "";
-  let confirmPassword = "";
 
   function btnRegister(
     name: string,
     email: string,
     password: string,
-    confirmPassword: string,
+    confirmPassword: string
   ) {
     console.log("Btn Register");
     console.log(name);
@@ -59,7 +58,7 @@ function RegisterPage() {
 
     navigateTo(name, email, password, confirmPassword);
 
-    uploadImageOnFireBase(upload,name,email,password) //ส่งไป upload ใน fireBase
+    uploadImageOnFireBase(upload, name, email, password); //ส่งไป upload ใน fireBase
   }
 
   const handleFileChange = (event) => {
@@ -68,9 +67,25 @@ function RegisterPage() {
 
     //ทำไฟล์เป็น formData
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     setUpload(formData); //เก็บไว้ใน setUpload
     setImgUrl(imageUrl);
+  };
+
+  const handleNameRegister = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleEmailRegister = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handlePasswordRegister = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handlePasswordConfirmRegister = (event) => {
+    setPasswordConfirm(event.target.value);
   };
 
   function navigateTo(
@@ -109,8 +124,16 @@ function RegisterPage() {
         </Box>
 
         <Card
-          className="card"
-          style={{ backgroundColor: "pink", borderRadius: "30px" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            width: "50vh",
+            height: "80vh",
+            backgroundColor: "pink",
+            alignItems: "center",
+            borderRadius: "30px",
+          }}
         >
           <h2>Sign In</h2>
           <Avatar
@@ -143,10 +166,9 @@ function RegisterPage() {
               sx={{ m: 1, width: "90%" }}
               type="name"
               id="name"
+              value={name}
               autoComplete="current-email"
-              onChange={(e) => {
-                name = e.target.value;
-              }}
+              onChange={handleNameRegister}
               InputProps={{
                 sx: { borderRadius: "50px", bgcolor: "white" },
                 startAdornment: (
@@ -164,9 +186,8 @@ function RegisterPage() {
               type="email"
               id="email"
               autoComplete="current-email"
-              onChange={(e) => {
-                email = e.target.value;
-              }}
+              value={email}
+              onChange={handleEmailRegister}
               InputProps={{
                 sx: { borderRadius: "50px", bgcolor: "white" },
                 startAdornment: (
@@ -184,9 +205,8 @@ function RegisterPage() {
               type="password"
               id="password"
               autoComplete="current-password"
-              onChange={(e) => {
-                password = e.target.value;
-              }}
+              value={password}
+              onChange={handlePasswordRegister}
               InputProps={{
                 sx: { borderRadius: "50px", bgcolor: "white" },
                 startAdornment: (
@@ -201,11 +221,10 @@ function RegisterPage() {
             <TextField
               placeholder="Confirm Password"
               sx={{ m: 1, width: "90%" }}
-              type="confirmPassword"
+              type="password"
               autoComplete="current-confirmPassword"
-              onChange={(e) => {
-                confirmPassword = e.target.value;
-              }}
+              value={passwordConfirm}
+              onChange={handlePasswordConfirmRegister}
               InputProps={{
                 sx: { borderRadius: "50px", bgcolor: "white" },
                 startAdornment: (
@@ -226,15 +245,32 @@ function RegisterPage() {
             }}
             variant="contained"
             onClick={() => {
-              if (name && email && password && confirmPassword) {
-                if (password == confirmPassword) {
-                  btnRegister(name, email, password, confirmPassword);
-                  alert("Register Success!!");
+              if (upload != null) {
+                if (
+                  name.trim() != "" &&
+                  email.trim() != "" &&
+                  password.trim() != "" &&
+                  passwordConfirm.trim() != ""
+                ) {
+                  if (isValidEmail(email)) {
+                    if (name.length >= 5 && password.length >= 8) {
+                      if (password == passwordConfirm) {
+                        btnRegister(name, email, password, passwordConfirm);
+                        alert("Register Success!!");
+                      } else {
+                        alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน !!");
+                      }
+                    } else {
+                      alert("Password ต้องมากกว่า 8 ตัว Name ต้องมากกว่า 5  !!");
+                    }
+                  }else {
+                    alert("ตัวอย่างอีเมล test@gmail.com !!")
+                  }
                 } else {
-                  alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน");
+                  alert("อย่าใส่ช่องว่างครับ !!");
                 }
               } else {
-                alert("กรุณาใส่ข้อมูลให้ครบทุกช่อง");
+                alert("ใส่รูปโปรไฟล์ด้วยครับ !!");
               }
             }}
           >
@@ -245,39 +281,71 @@ function RegisterPage() {
     </>
   );
 
-  async function  register(name:string,email:string,password:string,picture:string) {
+  function isValidEmail(email: string){
+    // ตรวจสอบว่ามี @ อยู่ในอีเมล์หรือไม่
+    const atIndex = email.indexOf("@");
+    if (atIndex === -1) {
+      // หากไม่มี @ อยู่ในอีเมล์
+      return false;
+    }
+
+    // ตรวจสอบว่า @ อยู่ตรงกลางหรือไม่
+    const atIndexEnd = email.indexOf("@", atIndex + 1);
+    if (atIndexEnd !== -1) {
+      // หากมี @ อีกตำแหน่งหนึ่งในอีเมล์
+      return false;
+    }
+
+    // ตรวจสอบว่า @ ไม่อยู่ที่จุดเริ่มต้นหรือจุดสิ้นสุดของอีเมล์
+    if (atIndex === 0 || atIndex === email.length - 1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async function register(
+    name: string,
+    email: string,
+    password: string,
+    picture: string
+  ) {
     const body = {
       name: name,
       email: email,
       password: password,
       picture: picture,
-      role: 1
+      role: 1,
     };
 
     console.log("Body");
-    
+
     console.log(body.name);
     console.log(body.email);
     console.log(body.password);
-    console.log(body.picture,typeof(body.picture));
+    console.log(body.picture, typeof body.picture);
     console.log(body.role);
 
-    console.log("Body :"+body);
+    console.log("Body :" + body);
     await services.postUserRegister(body);
   }
 
-  async function  uploadImageOnFireBase(data:FormData,name:string,email:string,password:string) {
-    console.log("ImageOnfireBase: "+data);
- 
-    
-   const res = await services.postPictureOnFireBase(data);
-   const img = String(res).split(" ") //แบ่งตรงเคื่องหมายวรรคตอน
-  //  console.log("URL: "+res.data["url"]);
-   
-  //  setUserImage(img[1])
-    console.log("Upload Image On Fire Base: "+ img[1]);
+  async function uploadImageOnFireBase(
+    data: FormData,
+    name: string,
+    email: string,
+    password: string
+  ) {
+    console.log("ImageOnfireBase: " + data);
 
-   await register(name,email,password,String(img[1]))
+    const res = await services.postPictureOnFireBase(data);
+    const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
+    //  console.log("URL: "+res.data["url"]);
+
+    //  setUserImage(img[1])
+    console.log("Upload Image On Fire Base: " + img[1]);
+
+    await register(name, email, password, String(img[1]));
   }
 }
 

@@ -14,26 +14,24 @@ import { UsersGetRespose } from "../../model/UserModel";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Service } from "../../api/service";
 
-export default function AppbarAfterLogin(id:number) {
-  // const user:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
+export default function AppbarAfterLogin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UsersGetRespose[]>();
-  // const [searchParams] = useSearchParams();
-  // const id = searchParams.get("id");
-
+  const [searchParams] = useSearchParams();
+  const id = Number(searchParams.get('id'));
   const services = new Service();
   
   function btnProfile(id:number) {
     console.log("Btn Profile");
-    navigateTo(id);
+    navigate(`/pcofile/`);
   }
 
   useEffect(() => {
-    autoLoad();
-  }, []);
+    autoLoad(id);
+  }, [id]);
 
-  const autoLoad = async () => {
+  const autoLoad = async (id:number) => {
     setLoading(true);
     try {
       const res = await services.getUserById(id);
@@ -49,11 +47,6 @@ export default function AppbarAfterLogin(id:number) {
     }
   };
 
-  // const services = new Service();
-
-  function navigateTo(id: number) {
-    navigate(`/profile?id=${id}`);
-  }
 
   return (
     <>
