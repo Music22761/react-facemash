@@ -3,6 +3,7 @@ import {
   Card,
   CardMedia,
   CircularProgress,
+  Grid,
   IconButton,
   Toolbar,
   Typography,
@@ -27,14 +28,30 @@ function ChartPicture() {
   const [picture, setPicture] = useState<PictureGetResponse[]>();
   const [voteScore, setVoteScore] = useState<VoteChart7Day>();
   const scoreData = voteScore?.voteChart?.map((item) => item?.[0]?.score) || [];
-  const dateTimes =
-    voteScore?.voteChart?.map((item) => {
-      const dateTime = new Date(item?.[0]?.date_time);
-      const day = dateTime.getDate(); // วัน
-      const month = dateTime.getMonth() + 1; // เดือน (เพิ่ม 1 เพราะเดือนเริ่มที่ 0)
-      const year = dateTime.getFullYear(); // ปี
-      return `${day}-${month}-${year}`; // รวมวัน เดือน ปี เข้าด้วยกัน
-    }) || [];
+  const dateTimes = voteScore?.voteChart?.map((item, index, array) => {
+    let dateTime;
+    if (item?.[0]?.date_time) {
+      dateTime = new Date(item[0].date_time);
+    } else {
+      dateTime = new Date(); // วันที่ปัจจุบัน
+    }
+  
+    if (index > 0 && array[index - 1]?.[0]?.date_time === item?.[0]?.date_time) {
+      // ถ้าวันที่เหมือนกับวันก่อนหน้า
+      dateTime.setDate(dateTime.getDate()+1); // เปลี่ยนเป็นวันที่ 1
+      // dateTime.setMonth(dateTime.getMonth()); // เพิ่มเดือนขึ้นไป 1 เดือน
+    }
+  
+    const day = dateTime.getDate(); // วัน
+    const month = dateTime.getMonth() + 1; // เดือน (เพิ่ม 1 เพราะเดือนเริ่มที่ 0)
+    const year = dateTime.getFullYear(); // ปี
+  
+    return `${day}-${month}-${year}`; // รวมวัน เดือน ปี เข้าด้วยกัน
+  }) || [];
+  
+  
+
+  
 
   const navigate = useNavigate();
 
@@ -75,6 +92,16 @@ function ChartPicture() {
       setLoading(false);
     }
   };
+
+  function chkScore(score:number) {
+    if (score > 0) {
+      return `+${score}`
+    }else if(score == 0){
+      return 0
+    }else{
+      return score
+    }
+  }
 
   return (
     <>
@@ -140,24 +167,43 @@ function ChartPicture() {
 
           <Card
             style={{
-              width: "70vw",
-              height: "70vh",
               marginTop: "5vh",
               display: "flex",
               flexDirection: "row",
             }}
           >
-            <Card style={{ width: "50%", marginBlock: "5%", marginLeft: "5%" }}>
-              <CardMedia component="img" image={picture?.[0].path} alt="Cat" />
-            </Card>
-
-            <BarChart
-              series={[
-                { data: scoreData }
-              ]}
-              height={290}
-              xAxis={[{ data: dateTimes, scaleType: "band" }]}
-            />
+            <Grid
+              container
+              spacing={{ xs: 2, md: 3 }}
+              columns={{ xs: 6, sm: 10, md: 12 }}
+              style={{
+                justifyContent: "center",
+                alignContent: "center",
+              }}
+            >
+              <Grid
+                xs={6}
+                style={{ justifyContent: "center", marginBottom: "5%" ,textAlign:'center'}}
+              >
+                <Card style={{ width: "100%" }}>
+                  <CardMedia
+                    component="img"
+                    image={picture?.[0].path}
+                    alt="Cat"
+                  />
+                </Card>
+                <Typography variant="h5">ชื่อ: {picture?.[0].name}</Typography>
+                <Typography variant="h5">คะแนนปัจจุบัน: {picture?.[0].score}</Typography>
+                <Typography variant="h5">การเปลี่ยนแปลงจากเมื่อวาน: {chkScore(Number(picture?.[0].score) - scoreData?.[1])}</Typography>
+              </Grid>
+              <Grid xs={6}>
+                <BarChart
+                  series={[{ data: scoreData }]}
+                  height={500}
+                  xAxis={[{ data: dateTimes, scaleType: "band" }]}
+                />
+              </Grid>
+            </Grid>
           </Card>
         </div>
       )}

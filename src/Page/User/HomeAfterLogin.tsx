@@ -22,6 +22,7 @@ import { UsersGetRespose } from "../../model/UserModel";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
 export default function HomePageAfterLogin() {
   // const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
@@ -168,6 +169,10 @@ export default function HomePageAfterLogin() {
     }
   }
 
+  function goToRank() {
+    navigate(`/rank`);
+  }
+
   //Navigate
   function btnProfile(id:number) {
     console.log("Btn Profile");
@@ -205,6 +210,19 @@ export default function HomePageAfterLogin() {
                 {user?.[0]?.name}
               </Typography>
               <span></span>
+              <IconButton
+                  size="large"
+                  edge="start"
+                  aria-label="menu"
+                  style={{ width: "50px", color: "blue" }}
+                  sx={{ mr: 2 }}
+                  onClick={() => {
+                    console.log("AppbarInProfile");
+                    goToRank();
+                  }}
+                >
+                  <FormatListNumberedIcon />
+                </IconButton>
 
               <IconButton
                 size="large"

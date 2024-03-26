@@ -65,12 +65,19 @@ export class Service {
   async getPictureRanking() {
     const url = HOST + `picture/rankToday`;
     const response = await axios.get(url);
-    const pictures: PictureGetRanking = response.data;
+    const pictures: PictureGetRanking[] = response.data;
     return pictures;
   }
 
   async getPictureRankingYesterday() {
     const url = HOST + `picture/rankYesterday`;
+    const response = await axios.get(url);
+    const pictures: PictureGetRankingYesterDay[] = response.data;
+    return pictures;
+  }
+
+  async getPictureRankingYesterdayByPictureId(picture_id:number) {
+    const url = HOST + `picture/rankYesterday/${picture_id}`;
     const response = await axios.get(url);
     const pictures: PictureGetRankingYesterDay = response.data;
     return pictures;

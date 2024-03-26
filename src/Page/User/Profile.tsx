@@ -44,7 +44,7 @@ function ProfilePage() {
   // const user: UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const [picture, setPicture] = useState<PictureGetResponse[]>([]);
   const [imageUrl, setImageUrl] = useState("");
-  const [upload, setUpload] = useState("");
+  const [upload, setUpload] = useState();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
@@ -95,14 +95,6 @@ function ProfilePage() {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
-
-  // function btnEdit(name: string, email: string) {
-  //   console.log("แก้ไขข้อมูลสำเร็จ");
-  //   console.log("name: " + name);
-  //   console.log("email: " + email);
-  //   setName(name);
-  //   setEmail(email);
-  // }
 
   useEffect(() => {
     // console.log("storage "+user.id);
@@ -369,7 +361,7 @@ function ProfilePage() {
                             
                             if (name.trim() != "" || email.trim() != "" || upload != null) {
                               console.log(name + "/" + email);
-                              editData(upload, name, email);
+                              editData(upload!, name, email);
                               setStatus(0)
                             }else{
                               

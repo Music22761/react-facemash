@@ -177,7 +177,7 @@ function InfoPicture() {
           variant="h4"
           style={{ marginTop: "20px", marginBottom: "20px" }}
         >
-          Name : Blaๆๆ <br />
+          Name : {picture?.[0].name} <br />
           Score : {picture?.[0].score}
         </Typography>
 

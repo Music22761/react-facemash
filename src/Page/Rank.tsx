@@ -19,14 +19,19 @@ import { UsersGetRespose } from "../model/UserModel";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { PictureGetRanking, PictureGetRankingYesterDay } from "../model/PictureModel";
+import {
+  PictureGetRanking,
+  PictureGetRankingYesterDay,
+} from "../model/PictureModel";
 
 function RankPage() {
   const [user, setUser] = useState<UsersGetRespose[]>();
   const [rank, setRank] = useState<PictureGetRanking[]>();
+  const [rankLevel, setRankLevel] = useState<string[]>();
   const [rankYester, setRankYester] = useState<PictureGetRankingYesterDay[]>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const level:string[] = [];
 
   const [searchParams] = useSearchParams();
   const id = Number(searchParams.get("id"));
@@ -41,9 +46,36 @@ function RankPage() {
       const res = await services.getUserById(id);
       const resRank = await services.getPictureRanking();
       const resRankYesterday = await services.getPictureRankingYesterday();
+
+      console.log(resRank);
+      console.log(resRankYesterday);
+
+      resRank.map((e) => {
+        const index = resRankYesterday.findIndex(item => item.picture_id === e.id);
+        if (index !== -1) {
+            // ถ้าพบว่า picture_id มีค่าเท่ากับ e.id
+            const diff = e.ranking - (index+1);
+            console.log("ToDay Index: " + (index+1) + ", Difference: " + (diff)+" Name: "+e.name);
+            const rank = calLevel(diff);
+            console.log("Rank: "+rank);
+            
+            // setRankLevel([rank])
+            level.push(rank)
+        } else {
+            console.log("Index: -1");
+        }
+    });
+
+      setRankLevel(level)
+    
+      
+
       setUser(res);
       setRank(resRank);
       setRankYester(resRankYesterday);
+      console.log("Array:"+ level[1]);
+      
+
       console.log("AutoLoad Appbar");
       // console.log(resRank);
     } catch (error) {
@@ -58,6 +90,21 @@ function RankPage() {
   function navigateTo() {
     navigate(-1);
   }
+
+  function goToProfile(id: number, role: number) {
+    navigate(`/profileUser?id=${id}&back${1}&role${role}`);
+  }
+
+  function calLevel(rank:number) {
+    if (rank < 0) {
+      return `+${rank*-1}`
+    }else if (rank > 0) {
+      return `-${rank}`
+    }else{
+      return "ไม่เปลี่ยน"
+    }
+  }
+
 
   return (
     <>
@@ -129,7 +176,7 @@ function RankPage() {
             spacing={{ xs: 2, md: 3 }}
             columns={{ xs: 3, sm: 6, md: 12 }}
             style={{
-              width:'65vw',
+              width: "65vw",
               justifyContent: "center",
               alignContent: "center",
               marginTop: "5vh",
@@ -159,7 +206,7 @@ function RankPage() {
                     maxHeight: "60vh",
                   }}
                 >
-                  {rank?.map((e) => (
+                  {rank?.slice(0, 10).map((e) => (
                     <ListItem
                       style={{
                         backgroundColor: "pink",
@@ -169,16 +216,20 @@ function RankPage() {
                       }}
                     >
                       <ListItemAvatar>
-                        <Avatar
-                          style={{
-                            border: "5px solid black",
-                            width: "15vh",
-                            height: "15vh",
-                          }}
-                          src={e.path}
-                        ></Avatar>
+                        <IconButton onClick={() => goToProfile(e.user_id, 1)}>
+                          <Avatar
+                            style={{
+                              border: "5px solid black",
+                              width: "15vh",
+                              height: "15vh",
+                            }}
+                            src={e.path}
+                          ></Avatar>
+                        </IconButton>
                       </ListItemAvatar>
                       <Typography variant="h5">
+                        Rank:{e.ranking} {rankLevel?.[e.ranking-1]}
+                        <br />
                         Name:{e.name}
                         <br />
                         Score:{e.score} <br />
@@ -209,7 +260,7 @@ function RankPage() {
                     maxHeight: "60vh",
                   }}
                 >
-                  {rankYester?.map((e) => (
+                  {rankYester?.slice(0, 10).map((e) => (
                     <ListItem
                       style={{
                         backgroundColor: "pink",
@@ -219,16 +270,20 @@ function RankPage() {
                       }}
                     >
                       <ListItemAvatar>
-                        <Avatar
-                          style={{
-                            border: "5px solid black",
-                            width: "15vh",
-                            height: "15vh",
-                          }}
-                          src={e.path}
-                        ></Avatar>
+                        <IconButton onClick={() => goToProfile(e.user_id, 1)}>
+                          <Avatar
+                            style={{
+                              border: "5px solid black",
+                              width: "15vh",
+                              height: "15vh",
+                            }}
+                            src={e.path}
+                          ></Avatar>
+                        </IconButton>
                       </ListItemAvatar>
                       <Typography variant="h5">
+                        Rank:{e.ranking}
+                        <br />
                         Name:{e.name}
                         <br />
                         Score:{e.score} <br />

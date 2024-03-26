@@ -56,7 +56,7 @@ function EditPicture() {
   const [upPic, setUpPic] = useState();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState(0);
   const [name, setName] = useState("");
 
   const handleClickOpen = () => {
@@ -108,41 +108,41 @@ function EditPicture() {
     await services.deletePictureOnFirebase(String(picture?.[0]?.path));
   }
 
-  async function addPicture(id: number, name: string, picture: string) {
-    const body = {
-      name: name,
-      score: 0,
-      user_id: id,
-      path: picture,
-    };
+  // async function addPicture(id: number, name: string, picture: string) {
+  //   const body = {
+  //     name: name,
+  //     score: 0,
+  //     user_id: id,
+  //     path: picture,
+  //   };
 
-    console.log("Body");
+  //   console.log("Body");
 
-    console.log(body.name);
-    console.log(body.score);
-    console.log(body.user_id);
-    console.log(body.path, typeof body.path);
+  //   console.log(body.name);
+  //   console.log(body.score);
+  //   console.log(body.user_id);
+  //   console.log(body.path, typeof body.path);
 
-    console.log("Body :" + body);
-    await services.postPicture(body);
-    alert("เปลี่ยนรูปสำเร็จ");
-    autoLoad(userId, picId);
-  }
+  //   console.log("Body :" + body);
+  //   await services.postPicture(body);
+  //   alert("เปลี่ยนรูปสำเร็จ");
+  //   autoLoad(userId, picId);
+  // }
 
-  async function uploadImageOnFireBase(
-    data: FormData,
-    id: number,
-    name: string
-  ) {
-    console.log("ImageOnfireBase: " + data);
+  // async function uploadImageOnFireBase(
+  //   data: FormData,
+  //   id: number,
+  //   name: string
+  // ) {
+  //   console.log("ImageOnfireBase: " + data);
 
-    const res = await services.postPictureOnFireBase(data);
-    const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
-    //  setUserImage(img[1])
-    console.log("Upload Image On Fire Base: " + img[1]);
+  //   const res = await services.postPictureOnFireBase(data);
+  //   const img = String(res).split(" "); //แบ่งตรงเคื่องหมายวรรคตอน
+  //   //  setUserImage(img[1])
+  //   console.log("Upload Image On Fire Base: " + img[1]);
 
-    await addPicture(id, name, String(img[1]));
-  }
+  //   await addPicture(id, name, String(img[1]));
+  // }
 
   async function editPicture(data: FormData, picture_id: number, name: string) {
 

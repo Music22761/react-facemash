@@ -16,12 +16,15 @@ import { useEffect, useState } from "react";
 import { Service } from "../api/service";
 import { PictureGetResponse } from "../model/PictureModel";
 import { VoteModel } from "../model/VoteModel";
+import { ImageHome } from "../model/DefualtModel";
 // import { UsersGetRespose } from "../model/UserModel";
 function HomePage() {
   // const [picture, setPicture] = useState<PictureGetResponse[]>();
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false); // สถานะของ dialog
-  const [picArr, setPicArr] = useState([]);
+  const [picArr, setPicArr] = useState<PictureGetResponse[]>();
+  const [img1, setImg1] = useState<ImageHome>();
+  const [img2, setImg2] = useState<ImageHome>();
   // const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
 
   useEffect(() => {
@@ -35,7 +38,7 @@ function HomePage() {
       // setPicture(res);
       console.log(res);
 
-      let currentDate = new Date();
+      const currentDate = new Date();
       for (let i = 0; i < 5; i++) {
         // เริ่มต้นจากวันที่ปัจจุบัน ลดวันที่ทีละ 1 ไปจนถึง 5 วันถัดไป
         currentDate.setDate(currentDate.getDate() - 1); // ลดวันที่ทีละ 1
@@ -84,6 +87,7 @@ function HomePage() {
     console.log("Loss Score: " + loss.score);
     console.log("Loss User_ID: " + loss.user_id);
 
+
     const K: number = 20;
     // ค่าคาดหวัดผลลัพธ์
     const Ew: number = 1 / (1 + 10 ** ((loss.score - win.score) / 400));
@@ -100,6 +104,28 @@ function HomePage() {
     // const scoreL:number;
     // console.log("Score Win After Cal: "+calculateScore(win.score+w))
     // console.log("Score Loss After Cal: "+calculateScore(loss.score+l))
+
+    const objImgWin:ImageHome = {
+      expextation:Ew,
+      picture:win.path,
+      name:win.name,
+      beforeScore:win.score,
+      score:w,
+      newScore:win.score+w
+    }
+
+    const objImgLoss:ImageHome = {
+      expextation:El,
+      picture:loss.path,
+      name:loss.name,
+      beforeScore:loss.score,
+      score:loss.score+l,
+      newScore:Number(calculateScore(l))
+    }
+
+    setImg1(objImgWin);
+    setImg2(objImgLoss);
+
 
     // สร้าง body สำหรับการ insert vote
     const bodyWin = {
@@ -150,6 +176,7 @@ function HomePage() {
     }
   }
 
+
   return (
     <>
       <ButtonAppBar />
@@ -168,7 +195,7 @@ function HomePage() {
               alignItems: "center",
             }}
           >
-            {picArr.map((e, i = 0) => (
+            {picArr?.map((e, i = 0) => (
               <Card
                 sx={{
                   maxWidth: 600,
@@ -222,8 +249,9 @@ function HomePage() {
               <div
                 style={{
                   display: "flex",
-                  width: "500px",
-                  height: "300px",
+                  width: "100%",
+                  minWidth:'600px',
+                  height: "80vh",
                 }}
               >
                 <Box
@@ -242,7 +270,7 @@ function HomePage() {
                       borderRadius: 100,
                     }}
                     component="img"
-                    // image={obj.wImg}
+                    image={img1?.picture}
                   />
                   <h4
                     style={{
@@ -251,13 +279,16 @@ function HomePage() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {/* {obj.win} (ชนะ) */}
+                    {img1?.name} (ชนะ)
                   </h4>
                   <br />
-                  <p>ค่าคาดหวังคือ: </p>
-                  <p>คะแนนเดิมมีอยู่: </p>
-                  <p>ได้คะแนนเพิ่มขึ้น: </p>
-                  <p>คะแนนใหม่ที่ได้คือ: </p>
+                  <p>K = 20</p>
+                  <p>EWin: 1 / (1 + 10 ** (({img2?.beforeScore} - {img1?.beforeScore}) / 400));</p>
+                  <p>ค่าคาดหวังคือ:{img1?.expextation}</p>
+                  <p>คะแนนเดิมมีอยู่:{img1?.beforeScore}</p>
+                  <p>ได้คะแนนเพิ่มขึ้น:{img1?.score}</p>
+                  <p>win: ({img1?.newScore} + K * (1 - {img1?.score}));</p>
+                  <p>คะแนนใหม่ที่ได้คือ:{img1?.newScore}</p>
                 </Box>
                 <hr />
                 <Box
@@ -276,7 +307,7 @@ function HomePage() {
                       borderRadius: 100,
                     }}
                     component="img"
-                    // image={obj.lImg}
+                    image={img2?.picture}
                   />
                   <h4
                     style={{
@@ -285,17 +316,16 @@ function HomePage() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {/* {obj.lose} (แพ้) */}
+                    {img2?.name} (แพ้)
                   </h4>
                   <br />
-                  <p>ค่าคาดหวังคือ:</p>
-                  <p>คะแนนเดิมมีอยู่:</p>
-                  <p>คะแนนลดลง:</p>
-                  {/* {obj.lNew < 0 ? (
-                    <p>คะแนนใหม่ที่ได้คือ: 0</p>
-                  ) : (
-                    <p>คะแนนใหม่ที่ได้คือ: {obj.lNew}</p>
-                  )} */}
+                  <p>K = 20</p>
+                  <p>ELoss: 1 / (1 + 10 ** (({img1?.beforeScore} - {img2?.beforeScore}) / 400));</p>
+                  <p>ค่าคาดหวังคือ:{img2?.expextation}</p>
+                  <p>คะแนนเดิมมีอยู่:{img2?.beforeScore}</p>
+                  <p>คะแนนลดลง:{img2?.score}</p>
+                  <p>loss: ({img2?.newScore} + K * (1 - {img2?.score}));</p>
+                  <p>คะแนนที่เหลือ:{img2?.newScore}</p>
                 </Box>
               </div>
             </DialogContent>
