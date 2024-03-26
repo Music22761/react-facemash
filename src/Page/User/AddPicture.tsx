@@ -15,7 +15,7 @@ import { Box } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Service } from "../../api/service";
 import { UsersGetRespose } from "../../model/UserModel";
@@ -39,11 +39,11 @@ function AddPicture() {
   //   localStorage.getItem("objUser")!
   // );
   const [user, setUser] = useState<UsersGetRespose[]>();
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState<string>();
   const [namePic, setNamePic] = useState("");
   const [loading, setLoading] = useState(false);
   const [pic, setPic] = useState<PictureGetResponse[]>();
-  const [upPic, setUpPic] = useState();
+  const [upPic, setUpPic] = useState<FormData>();
   const navigate = useNavigate();
   const services = new Service();
 
@@ -60,11 +60,12 @@ function AddPicture() {
     navigate(`/homeAfterLog?id=${id}`);
   }
 
-  const handleNameChange = (event) => {
+  const handleNameChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setNamePic(event.target.value);
   };
 
-  const handleFileChange = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (event:any) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
 
@@ -240,7 +241,7 @@ function AddPicture() {
                     if (namePic != null && namePic.trim() !== "") {
                       console.log(namePic);
                       
-                      uploadImageOnFireBase(upPic, id, namePic);
+                      uploadImageOnFireBase(upPic!, id, namePic);
                     }else{
                       alert("ใส่ชื่อก่อน")
                     }

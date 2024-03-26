@@ -27,7 +27,7 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 export default function HomePageAfterLogin() {
   // const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   //ใช้ localstorage มีปัญหา
-  const [picArr, setPicArr] = useState([]);
+  const [picArr, setPicArr] = useState<PictureGetResponse[]>();
   const [user, setUser] = useState<UsersGetRespose[]>();
   const [openDialog, setOpenDialog] = useState(false); // สถานะของ dialog
   // console.log("Local Storeage: ",userStorage);
@@ -56,7 +56,7 @@ export default function HomePageAfterLogin() {
       setUser(resUser);
       console.log(res);
 
-      let currentDate = new Date();
+      const currentDate = new Date();
       for (let i = 0; i < 5; i++) {
         // เริ่มต้นจากวันที่ปัจจุบัน ลดวันที่ทีละ 1 ไปจนถึง 5 วันถัดไป
         currentDate.setDate(currentDate.getDate() - 1); // ลดวันที่ทีละ 1
@@ -266,7 +266,7 @@ export default function HomePageAfterLogin() {
               alignItems: "center",
             }}
           >
-            {picArr.map((e, i = 0) => (
+            {picArr?.map((e, i = 0) => (
               <Card
                 sx={{
                   maxWidth: 600,

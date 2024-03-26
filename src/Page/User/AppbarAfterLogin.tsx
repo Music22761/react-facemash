@@ -23,7 +23,7 @@ export default function AppbarAfterLogin() {
   const services = new Service();
   
   function btnProfile(id:number) {
-    console.log("Btn Profile");
+    console.log("Btn Profile"+id);
     navigate(`/pcofile/`);
   }
 

@@ -4,7 +4,7 @@ import { PictureGetRanking, PictureGetRankingYesterDay, PictureGetResponse } fro
 import { VoteChart7Day, VoteModel } from "../model/VoteModel";
 
 // eslint-disable-next-line react-refresh/only-export-components
-const HOST: string = "http://localhost:3000/";
+const HOST: string = "https//localhost:3000/";
 
 export class Service {
 

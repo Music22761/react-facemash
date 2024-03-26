@@ -18,7 +18,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 // import { useRef } from "react";
 
 import "../css/Register.css";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { Service } from "../api/service";
 
 const VisuallyHiddenInput = styled("input")({
@@ -35,8 +35,8 @@ const VisuallyHiddenInput = styled("input")({
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const [imgUrl, setImgUrl] = useState(null);
-  const [upload, setUpload] = useState();
+  const [imgUrl, setImgUrl] = useState<string>();
+  const [upload, setUpload] = useState<FormData>();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,33 +58,38 @@ function RegisterPage() {
 
     navigateTo(name, email, password, confirmPassword);
 
-    uploadImageOnFireBase(upload, name, email, password); //ส่งไป upload ใน fireBase
+    uploadImageOnFireBase(upload!, name, email, password); //ส่งไป upload ใน fireBase
   }
 
-  const handleFileChange = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (event:any) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
 
     //ทำไฟล์เป็น formData
     const formData = new FormData();
     formData.append("file", file);
+
+    console.log("File:"+formData);
+    console.log("IMage:"+imageUrl);
+    
     setUpload(formData); //เก็บไว้ใน setUpload
     setImgUrl(imageUrl);
   };
 
-  const handleNameRegister = (event) => {
+  const handleNameRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
     setName(event.target.value);
   };
 
-  const handleEmailRegister = (event) => {
+  const handleEmailRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
     setEmail(event.target.value);
   };
 
-  const handlePasswordRegister = (event) => {
+  const handlePasswordRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
     setPassword(event.target.value);
   };
 
-  const handlePasswordConfirmRegister = (event) => {
+  const handlePasswordConfirmRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
     setPasswordConfirm(event.target.value);
   };
 
@@ -257,6 +262,11 @@ function RegisterPage() {
                       if (password == passwordConfirm) {
                         btnRegister(name, email, password, passwordConfirm);
                         alert("Register Success!!");
+                        console.log(name);
+                        console.log(email);
+                        console.log(password);
+                        console.log(passwordConfirm);
+
                       } else {
                         alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน !!");
                       }

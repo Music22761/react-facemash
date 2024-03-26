@@ -44,7 +44,7 @@ function ProfilePage() {
   // const user: UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const [picture, setPicture] = useState<PictureGetResponse[]>([]);
   const [imageUrl, setImageUrl] = useState("");
-  const [upload, setUpload] = useState();
+  const [upload, setUpload] = useState<FormData>();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
@@ -62,7 +62,8 @@ function ProfilePage() {
   };
   const services = new Service();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (event:any) => {
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -88,11 +89,11 @@ function ProfilePage() {
     }
   };
 
-  const handleNameChange = (event) => {
+  const handleNameChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setName(event.target.value);
   };
 
-  const handleEmailChange = (event) => {
+  const handleEmailChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setEmail(event.target.value);
   };
 

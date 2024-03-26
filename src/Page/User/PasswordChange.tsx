@@ -31,7 +31,7 @@ function PasswordChangePage() {
   const [loading, setLoading] = useState(false);
   const id = Number(searchParams.get("id"));
   const [open, setOpen] = React.useState(false);
-  const [passwd, setPasswd] = useState();
+  const [passwd, setPasswd] = useState<string>();
 
   const handleClickOpen = () => {
     setOpen(true);

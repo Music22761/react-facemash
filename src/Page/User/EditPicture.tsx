@@ -20,7 +20,7 @@ import { Box } from "@mui/system";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import TimelineIcon from "@mui/icons-material/Timeline";
 // import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
@@ -47,13 +47,13 @@ function EditPicture() {
   const userId = Number(searchParams.get("id"));
   const picId = Number(searchParams.get("picId"));
 
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<UsersGetRespose[]>();
 
   // const user:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
   const [picture, setPicture] = useState<PictureGetResponse[]>();
-  const [upPic, setUpPic] = useState();
+  const [upPic, setUpPic] = useState<FormData>();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState(0);
@@ -81,11 +81,12 @@ function EditPicture() {
     navigate(`/homeAfterLog?id=${id}`);
   }
 
-  const handleNameChange = (event) => {
+  const handleNameChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setName(event.target.value);
   };
 
-  const handleFileChange = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (event:any) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
 
@@ -391,7 +392,7 @@ function EditPicture() {
                       console.log("Name: " + name + " |Type: " + typeof name);
                       if (name != null && name.trim() !== "") {
                         console.log("Edit Picture");
-                        editPicture(upPic,picId,name);
+                        editPicture(upPic!,picId,name);
                         navigateTo();
                       } else {
                         alert("ใส่ชื่อก่อนจ่ะ !! :)");
