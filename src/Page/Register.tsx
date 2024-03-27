@@ -7,6 +7,7 @@ import {
   Button,
   TextField,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import { Box, styled } from "@mui/system";
 import EmailIcon from "@mui/icons-material/Email";
@@ -18,8 +19,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 // import { useRef } from "react";
 
 import "../css/Register.css";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Service } from "../api/service";
+import { UsersGetRespose } from "../model/UserModel";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -41,6 +43,8 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<UsersGetRespose[]>();
   // const [userImage, setUserImage] = useState();
   const services = new Service();
 
@@ -62,7 +66,7 @@ function RegisterPage() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFileChange = (event:any) => {
+  const handleFileChange = (event: any) => {
     const file = event.target.files[0];
     const imageUrl = URL.createObjectURL(file);
 
@@ -70,26 +74,34 @@ function RegisterPage() {
     const formData = new FormData();
     formData.append("file", file);
 
-    console.log("File:"+formData);
-    console.log("IMage:"+imageUrl);
-    
+    console.log("File:" + formData);
+    console.log("IMage:" + imageUrl);
+
     setUpload(formData); //เก็บไว้ใน setUpload
     setImgUrl(imageUrl);
   };
 
-  const handleNameRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
+  const handleNameRegister = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setName(event.target.value);
   };
 
-  const handleEmailRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
+  const handleEmailRegister = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setEmail(event.target.value);
   };
 
-  const handlePasswordRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
+  const handlePasswordRegister = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setPassword(event.target.value);
   };
 
-  const handlePasswordConfirmRegister = (event: { target: { value: SetStateAction<string>; }; }) => {
+  const handlePasswordConfirmRegister = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setPasswordConfirm(event.target.value);
   };
 
@@ -104,194 +116,224 @@ function RegisterPage() {
     );
   }
 
+  useEffect(() => {
+    // console.log("storage "+user.id);
+
+    autoLoad();
+  }, []);
+
+  const autoLoad = async () => {
+    setLoading(true);
+    try {
+      const resUser = await services.getAllUser();
+      setUser(resUser);
+      console.log(resUser);
+    } catch (error) {
+      console.error("Failed to load movie:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      <body>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="fixed" style={{ backgroundColor: "pink" }}>
-            <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                style={{ width: "50px" }}
-              >
-                <Link to={"/"}>
-                  <HomeIcon />
-                </Link>
-              </IconButton>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                News
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </Box>
+      {loading ? (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <body>
+          <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="fixed" style={{ backgroundColor: "pink" }}>
+              <Toolbar>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  style={{ width: "50px" }}
+                >
+                  <Link to={"/"}>
+                    <HomeIcon />
+                  </Link>
+                </IconButton>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  News
+                </Typography>
+              </Toolbar>
+            </AppBar>
+          </Box>
 
-        <Card
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            width: "50vh",
-            height: "80vh",
-            backgroundColor: "pink",
-            alignItems: "center",
-            borderRadius: "30px",
-          }}
-        >
-          <h2>Sign In</h2>
-          <Avatar
-            style={{ width: "150px", height: "150px" }}
-            src={
-              imgUrl ||
-              "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"
-            }
-            alt="Selected Image"
-          />
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            style={{}}
-          >
-            Upload
-            <VisuallyHiddenInput
-              type="file"
-              id="file"
-              onChange={handleFileChange}
-            />
-          </Button>
-
-          <div>
-            <TextField
-              placeholder="name"
-              sx={{ m: 1, width: "90%" }}
-              type="name"
-              id="name"
-              value={name}
-              autoComplete="current-email"
-              onChange={handleNameRegister}
-              InputProps={{
-                sx: { borderRadius: "50px", bgcolor: "white" },
-                startAdornment: (
-                  <BadgeIcon
-                    fontSize="large"
-                    sx={{ color: "black", marginRight: "20px" }}
-                  />
-                ),
-              }}
-            />
-
-            <TextField
-              placeholder="Email"
-              sx={{ m: 1, width: "90%" }}
-              type="email"
-              id="email"
-              autoComplete="current-email"
-              value={email}
-              onChange={handleEmailRegister}
-              InputProps={{
-                sx: { borderRadius: "50px", bgcolor: "white" },
-                startAdornment: (
-                  <EmailIcon
-                    fontSize="large"
-                    sx={{ color: "black", marginRight: "20px" }}
-                  />
-                ),
-              }}
-            />
-
-            <TextField
-              placeholder="Password"
-              sx={{ m: 1, width: "90%" }}
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={handlePasswordRegister}
-              InputProps={{
-                sx: { borderRadius: "50px", bgcolor: "white" },
-                startAdornment: (
-                  <LockIcon
-                    fontSize="large"
-                    sx={{ color: "black", marginRight: "20px" }}
-                  />
-                ),
-              }}
-            />
-
-            <TextField
-              placeholder="Confirm Password"
-              sx={{ m: 1, width: "90%" }}
-              type="password"
-              autoComplete="current-confirmPassword"
-              value={passwordConfirm}
-              onChange={handlePasswordConfirmRegister}
-              InputProps={{
-                sx: { borderRadius: "50px", bgcolor: "white" },
-                startAdornment: (
-                  <LockIcon
-                    fontSize="large"
-                    sx={{ color: "black", marginRight: "20px" }}
-                  />
-                ),
-              }}
-            />
-          </div>
-
-          <Button
+          <Card
             style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              width: "50vh",
+              height: "80vh",
+              backgroundColor: "pink",
+              alignItems: "center",
               borderRadius: "30px",
-              width: "100px",
-              backgroundColor: "purple",
             }}
-            variant="contained"
-            onClick={() => {
-              if (upload != null) {
-                if (
-                  name.trim() != "" &&
-                  email.trim() != "" &&
-                  password.trim() != "" &&
-                  passwordConfirm.trim() != ""
-                ) {
-                  if (isValidEmail(email)) {
-                    if (name.length >= 5 && password.length >= 8) {
-                      if (password == passwordConfirm) {
-                        btnRegister(name, email, password, passwordConfirm);
-                        alert("Register Success!!");
-                        console.log(name);
-                        console.log(email);
-                        console.log(password);
-                        console.log(passwordConfirm);
+          >
+            <h2>Sign In</h2>
+            <Avatar
+              style={{ width: "150px", height: "150px" }}
+              src={
+                imgUrl ||
+                "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"
+              }
+              alt="Selected Image"
+            />
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              style={{}}
+            >
+              Upload
+              <VisuallyHiddenInput
+                type="file"
+                id="file"
+                onChange={handleFileChange}
+              />
+            </Button>
 
+            <div>
+              <TextField
+                placeholder="name"
+                sx={{ m: 1, width: "90%" }}
+                type="name"
+                id="name"
+                value={name}
+                autoComplete="current-email"
+                onChange={handleNameRegister}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <BadgeIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
+                }}
+              />
+
+              <TextField
+                placeholder="Email"
+                sx={{ m: 1, width: "90%" }}
+                type="email"
+                id="email"
+                autoComplete="current-email"
+                value={email}
+                onChange={handleEmailRegister}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <EmailIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
+                }}
+              />
+
+              <TextField
+                placeholder="Password"
+                sx={{ m: 1, width: "90%" }}
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={handlePasswordRegister}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <LockIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
+                }}
+              />
+
+              <TextField
+                placeholder="Confirm Password"
+                sx={{ m: 1, width: "90%" }}
+                type="password"
+                autoComplete="current-confirmPassword"
+                value={passwordConfirm}
+                onChange={handlePasswordConfirmRegister}
+                InputProps={{
+                  sx: { borderRadius: "50px", bgcolor: "white" },
+                  startAdornment: (
+                    <LockIcon
+                      fontSize="large"
+                      sx={{ color: "black", marginRight: "20px" }}
+                    />
+                  ),
+                }}
+              />
+            </div>
+
+            <Button
+              style={{
+                borderRadius: "30px",
+                width: "100px",
+                backgroundColor: "purple",
+              }}
+              variant="contained"
+              onClick={() => {
+                if (upload != null) {
+                  if (
+                    name.trim() != "" &&
+                    email.trim() != "" &&
+                    password.trim() != "" &&
+                    passwordConfirm.trim() != ""
+                  ) {
+                    if (isValidEmail(email)) {
+                      if (user?.find((value) => value.email === email)) {
+                        alert("อีเมลซ้ำครับ");
                       } else {
-                        alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน !!");
+                        if (name.length >= 5 && password.length >= 8) {
+                          if (password == passwordConfirm) {
+                            btnRegister(name, email, password, passwordConfirm);
+                            alert("Register Success!!");
+                            console.log(name);
+                            console.log(email);
+                            console.log(password);
+                            console.log(passwordConfirm);
+                          } else {
+                            alert("Password ไม่ตรงกัน กรุณาใส่ให้ตรงกัน !!");
+                          }
+                        } else {
+                          alert(
+                            "Password ต้องมากกว่า 8 ตัว Name ต้องมากกว่า 5  !!"
+                          );
+                        }
                       }
                     } else {
-                      alert("Password ต้องมากกว่า 8 ตัว Name ต้องมากกว่า 5  !!");
+                      alert("ตัวอย่างอีเมล test@gmail.com !!");
                     }
-                  }else {
-                    alert("ตัวอย่างอีเมล test@gmail.com !!")
+                  } else {
+                    alert("อย่าใส่ช่องว่างครับ !!");
                   }
                 } else {
-                  alert("อย่าใส่ช่องว่างครับ !!");
+                  alert("ใส่รูปโปรไฟล์ด้วยครับ !!");
                 }
-              } else {
-                alert("ใส่รูปโปรไฟล์ด้วยครับ !!");
-              }
-            }}
-          >
-            Register
-          </Button>
-        </Card>
-      </body>
+              }}
+            >
+              Register
+            </Button>
+          </Card>
+        </body>
+      )}
     </>
   );
 
-  function isValidEmail(email: string){
+  function isValidEmail(email: string) {
     // ตรวจสอบว่ามี @ อยู่ในอีเมล์หรือไม่
     const atIndex = email.indexOf("@");
     if (atIndex === -1) {

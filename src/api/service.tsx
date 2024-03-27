@@ -4,7 +4,7 @@ import { PictureGetRanking, PictureGetRankingYesterDay, PictureGetResponse } fro
 import { VoteChart7Day, VoteModel } from "../model/VoteModel";
 
 // eslint-disable-next-line react-refresh/only-export-components
-const HOST: string = "http//localhost:3000/";
+const HOST: string = "https://facemash-api-1-kkxs.onrender.com/";
 
 export class Service {
 
@@ -36,7 +36,7 @@ export class Service {
     const response = await axios.post(url,body);
     const res = response.data
     console.log(res);
-    
+   
   }
 
   async putUserEdit(body: { name: string | undefined; email: string | undefined; picture: string | undefined },id:number) {

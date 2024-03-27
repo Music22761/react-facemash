@@ -23,6 +23,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LogoutIcon from "@mui/icons-material/Logout";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import { ImageHome } from "../../model/DefualtModel";
 
 export default function HomePageAfterLogin() {
   // const userStorage:UsersGetRespose = JSON.parse(localStorage.getItem("objUser")!);
@@ -34,6 +35,8 @@ export default function HomePageAfterLogin() {
 
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
+  const [img1, setImg1] = useState<ImageHome>();
+  const [img2, setImg2] = useState<ImageHome>();
 
   const services = new Service();
 
@@ -112,13 +115,28 @@ export default function HomePageAfterLogin() {
     const l: number = Math.floor(loss.score + K * (0 - El));
     // ผลการคำนวน
     console.log("Win Score : " + w);
-    // console.log("Win Score : "+(win.score));
     console.log("Lose Score : " + l);
 
-    // const scoreW:number;
-    // const scoreL:number;
-    // console.log("Score Win After Cal: "+calculateScore(win.score+w))
-    // console.log("Score Loss After Cal: "+calculateScore(loss.score+l))
+    const objImgWin:ImageHome = {
+      expextation:Ew,
+      picture:win.path,
+      name:win.name,
+      beforeScore:win.score,
+      score:w,
+      newScore:w
+    }
+
+    const objImgLoss:ImageHome = {
+      expextation:El,
+      picture:loss.path,
+      name:loss.name,
+      beforeScore:loss.score,
+      score:Number(calculateScore(l)),
+      newScore:Number(calculateScore(l))
+    }
+
+    setImg1(objImgWin);
+    setImg2(objImgLoss);
 
     // สร้าง body สำหรับการ insert vote
     const bodyWin = {
@@ -170,7 +188,7 @@ export default function HomePageAfterLogin() {
   }
 
   function goToRank() {
-    navigate(`/rank`);
+    navigate(`/rank?id=${id}`);
   }
 
   //Navigate
@@ -183,7 +201,7 @@ export default function HomePageAfterLogin() {
     <>
       {loading ? (
         <>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{width:'100%',height:'80vh',display:'flex',flexDirection:'column',justifyContent:'center',alignContent:'center'}}>
             <CircularProgress />
           </div>
         </>
@@ -240,7 +258,7 @@ export default function HomePageAfterLogin() {
 
               <div style={{ padding: "5px" }}></div>
 
-              <Link to={"/"} onClick={localStorage.clear}>
+              <Link to={"/"} onClick={()=>localStorage.clear()}>
                 <IconButton
                   size="large"
                   edge="start"
@@ -320,8 +338,9 @@ export default function HomePageAfterLogin() {
               <div
                 style={{
                   display: "flex",
-                  width: "500px",
-                  height: "300px",
+                  width: "100%",
+                  minWidth:'600px',
+                  height: "80vh",
                 }}
               >
                 <Box
@@ -333,14 +352,14 @@ export default function HomePageAfterLogin() {
                     justifyContent: "center",
                   }}
                 >
-                  <CardMedia
+                                    <CardMedia
                     sx={{
                       height: 100,
                       width: 100,
                       borderRadius: 100,
                     }}
                     component="img"
-                    // image={obj.wImg}
+                    image={img1?.picture}
                   />
                   <h4
                     style={{
@@ -349,13 +368,16 @@ export default function HomePageAfterLogin() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {/* {obj.win} (ชนะ) */}
+                    {img1?.name} (ชนะ)
                   </h4>
                   <br />
-                  <p>ค่าคาดหวังคือ: </p>
-                  <p>คะแนนเดิมมีอยู่: </p>
-                  <p>ได้คะแนนเพิ่มขึ้น: </p>
-                  <p>คะแนนใหม่ที่ได้คือ: </p>
+                  <p>K = 20</p>
+                  <p>EWin: 1 / (1 + 10 ** (({img2?.beforeScore} - {img1?.beforeScore}) / 400));</p>
+                  <p>ค่าคาดหวังคือ:{img1?.expextation}</p>
+                  <p>คะแนนเดิมมีอยู่:{img1?.beforeScore}</p>
+                  <p>ได้คะแนนเพิ่มขึ้น:{Number(img1?.score)-Number(img1?.beforeScore)}</p>
+                  <p>win: ({img1?.newScore} + K * (1 - {img1?.score}));</p>
+                  <p>คะแนนใหม่ที่ได้คือ:{img1?.newScore}</p>
                 </Box>
                 <hr />
                 <Box
@@ -374,7 +396,7 @@ export default function HomePageAfterLogin() {
                       borderRadius: 100,
                     }}
                     component="img"
-                    // image={obj.lImg}
+                    image={img2?.picture}
                   />
                   <h4
                     style={{
@@ -383,17 +405,16 @@ export default function HomePageAfterLogin() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {/* {obj.lose} (แพ้) */}
+                    {img2?.name} (แพ้)
                   </h4>
                   <br />
-                  <p>ค่าคาดหวังคือ:</p>
-                  <p>คะแนนเดิมมีอยู่:</p>
-                  <p>คะแนนลดลง:</p>
-                  {/* {obj.lNew < 0 ? (
-                    <p>คะแนนใหม่ที่ได้คือ: 0</p>
-                  ) : (
-                    <p>คะแนนใหม่ที่ได้คือ: {obj.lNew}</p>
-                  )} */}
+                  <p>K = 20</p>
+                  <p>ELoss: 1 / (1 + 10 ** (({img1?.beforeScore} - {img2?.beforeScore}) / 400));</p>
+                  <p>ค่าคาดหวังคือ:{img2?.expextation}</p>
+                  <p>คะแนนเดิมมีอยู่:{img2?.beforeScore}</p>
+                  <p>คะแนนลดลง:{Number(img2?.beforeScore)-Number(img2?.score)}</p>
+                  <p>loss: ({img2?.newScore} + K * (1 - {img2?.score}));</p>
+                  <p>คะแนนที่เหลือ:{img2?.newScore}</p>
                 </Box>
               </div>
             </DialogContent>

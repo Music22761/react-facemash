@@ -28,20 +28,14 @@ function ChartPicture() {
   const [picture, setPicture] = useState<PictureGetResponse[]>();
   const [voteScore, setVoteScore] = useState<VoteChart7Day>();
   const scoreData = voteScore?.voteChart?.map((item) => item?.[0]?.score) || [];
-  const dateTimes = voteScore?.voteChart?.map((item, index, array) => {
+  const dateTimes = voteScore?.voteChart?.map((item) => {
     let dateTime;
     if (item?.[0]?.date_time) {
       dateTime = new Date(item[0].date_time);
     } else {
       dateTime = new Date(); // วันที่ปัจจุบัน
     }
-  
-    if (index > 0 && array[index - 1]?.[0]?.date_time === item?.[0]?.date_time) {
-      // ถ้าวันที่เหมือนกับวันก่อนหน้า
-      dateTime.setDate(dateTime.getDate()+1); // เปลี่ยนเป็นวันที่ 1
-      // dateTime.setMonth(dateTime.getMonth()); // เพิ่มเดือนขึ้นไป 1 เดือน
-    }
-  
+
     const day = dateTime.getDate(); // วัน
     const month = dateTime.getMonth() + 1; // เดือน (เพิ่ม 1 เพราะเดือนเริ่มที่ 0)
     const year = dateTime.getFullYear(); // ปี

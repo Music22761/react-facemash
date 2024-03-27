@@ -12,11 +12,11 @@ import {
   Box,
   Toolbar,
   Typography,
+  Grid,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import "../../css/Profile.css";
@@ -55,20 +55,37 @@ function ProfileUserPage() {
     }
   };
 
-  function goToInfoPicture(id:number,picId:number) {
+  function goToInfoPicture(id: number, picId: number) {
     navigate(`/infoPicture?id=${id}&picId=${picId}`);
-  }
-
-  function goToRank() {
-    navigate(`/rank?id=${id}`);
   }
 
   function goBack() {
     navigate(-1);
   }
 
-  function goToHomeAfterLogin(id:number) {
-    navigate(`/homeAfterLog?id=${id}`)
+  function goToHomeAfterLogin(id: number) {
+    navigate(`/homeAfterLog?id=${id}`);
+  }
+
+  function chkLogin(role: number) {
+    if (role == 1 || role == 99) {
+      return (
+        <Link to={"/"} onClick={() => localStorage.clear()}>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            style={{ color: "red", width: "50px" }}
+            sx={{ mr: 2 }}
+          >
+            <LogoutIcon />
+          </IconButton>
+        </Link>
+      );
+    } else {
+      return <div></div>;
+    }
   }
 
   return (
@@ -89,9 +106,9 @@ function ProfileUserPage() {
                   aria-label="menu"
                   style={{ width: "50px" }}
                   sx={{ mr: 2 }}
-                  onClick={()=>(goToHomeAfterLogin(id))}
+                  onClick={() => goToHomeAfterLogin(id)}
                 >
-                    <HomeIcon />
+                  <HomeIcon />
                 </IconButton>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
                   {user?.map((e) => e.name)}
@@ -111,131 +128,117 @@ function ProfileUserPage() {
                   sx={{ mr: 2 }}
                   onClick={() => {
                     console.log("AppbarInProfile");
-                    goToRank();
-                  }}
-                >
-                  <FormatListNumberedIcon />
-                </IconButton>
-
-                <IconButton
-                  size="large"
-                  edge="start"
-                  aria-label="menu"
-                  style={{ width: "50px", color: "blue" }}
-                  sx={{ mr: 2 }}
-                  onClick={() => {
-                    console.log("AppbarInProfile");
                     goBack();
                   }}
                 >
-                  <ArrowBackIcon/>
+                  <ArrowBackIcon />
                 </IconButton>
 
                 <div style={{ padding: "5px" }}></div>
 
-                <Link to={"/"}>
-                  <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    style={{ color: "red", width: "50px" }}
-                    sx={{ mr: 2 }}
-                  >
-                    <LogoutIcon />
-                  </IconButton>
-                </Link>
+                {chkLogin(Number(user?.[0]?.role))}
               </Toolbar>
             </AppBar>
           </Box>
 
-          <div
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 6, sm: 10, md: 12 }}
             style={{
-              display: "flex",
-              flexDirection: "row",
               justifyContent: "center",
-              marginTop: "5vh",
+              alignContent: "center",
+              marginTop: "10%",
+              marginRight: "20px",
             }}
           >
-            <Card
-              className="card"
-              style={{
-                backgroundColor: "pink",
-                marginRight: "10%",
-                borderRadius: "30px",
-              }}
+            <Grid
+              xs={6}
+              style={{ justifyContent: "center", marginBottom: "5%" }}
             >
-              <Avatar
+              <Card
+                className="card"
                 style={{
-                  border: "5px solid black",
-                  margin: "10%",
-                  width: "30vh",
-                  height: "30vh",
+                  backgroundColor: "pink",
+                  marginRight: "10%",
+                  borderRadius: "30px",
                 }}
-                alt="Remy Sharp"
-                src={user?.[0]?.picture}
-              />
-
-              <div>
-                <input
-                  className="input"
-                  type="text"
-                  id="name"
-                  placeholder={String(user?.map((e) => e.name))}
+              >
+                <Avatar
+                  style={{
+                    marginTop: "20px",
+                    width: "250px",
+                    height: "250px",
+                    border: "5px solid black",
+                  }}
+                  alt="Remy Sharp"
+                  src={user?.[0]?.picture}
                 />
 
-                <input
-                  className="input"
-                  type="email"
-                  id="email"
-                  placeholder={String(user?.map((e) => e.email))}
-                />
-              </div>
-            </Card>
-            <div
-              style={{
-                borderRadius: "30px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "pink",
-                width: "30vw",
-                height: "70vh",
-              }}
-            >
-              <ImageList sx={{ width: "30vw", height: 450 }}>
-                <ImageListItem key="Subheader" cols={2}>
-                  <ListSubheader component="div">Pictures</ListSubheader>
-                </ImageListItem>
-                {picture?.map((e) => (
-                  <ImageListItem key={e.id}>
-                    <img
-                      srcSet={e.path}
-                      src={e.path}
-                      alt={e.path}
-                      loading="lazy"
-                    />
-                    <ImageListItemBar
-                      title={e.name}
-                      subtitle={e.score}
-                      actionIcon={
-                        <IconButton
-                          sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                          aria-label={`info about ${e.name}`}
-                          onClick={()=>{
-                            goToInfoPicture(user?.[0]?.id,e.id);
-                          }}
-                        >
-                          <InfoIcon />
-                        </IconButton>
-                      }
-                    />
+                <div style={{marginTop:'10vh'}}>
+                  <input
+                    className="input"
+                    type="text"
+                    id="name"
+                    placeholder={String(user?.map((e) => e.name))}
+                  />
+
+                  <input
+                    className="input"
+                    type="email"
+                    id="email"
+                    placeholder={String(user?.map((e) => e.email))}
+                  />
+                </div>
+              </Card>
+            </Grid>
+            <Grid xs={6}>
+              <div
+                style={{
+                  borderRadius: "30px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "pink",
+                  width: "30vw",
+                  height: "70vh",
+                  minWidth: "500px",
+                }}
+              >
+                <ImageList sx={{ width: "100%", height: 450 }}>
+                  <ImageListItem key="Subheader" cols={2}>
+                    <ListSubheader component="div">Pictures</ListSubheader>
                   </ImageListItem>
-                ))}
-              </ImageList>
-            </div>
-          </div>
+                  {picture?.map((e) => (
+                    <ImageListItem key={e.id}>
+                      <img
+                        srcSet={e.path}
+                        src={e.path}
+                        alt={e.path}
+                        loading="lazy"
+                      />
+                      <ImageListItemBar
+                        title={e.name}
+                        subtitle={e.score}
+                        actionIcon={
+                          <IconButton
+                            sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+                            aria-label={`info about ${e.name}`}
+                            onClick={() => {
+                              goToInfoPicture(user?.[0]?.id, e.id);
+                            }}
+                          >
+                            <InfoIcon />
+                          </IconButton>
+                        }
+                      />
+                    </ImageListItem>
+                  ))}
+                </ImageList>
+              </div>
+            </Grid>
+          </Grid>
         </div>
       )}
     </>

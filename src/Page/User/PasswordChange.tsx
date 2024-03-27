@@ -18,7 +18,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import { useState, useEffect } from "react";
 import { Service } from "../../api/service";
 import { UsersGetRespose } from "../../model/UserModel";
@@ -64,10 +63,6 @@ function PasswordChangePage() {
       setLoading(false);
     }
   };
-
-  function goToRank() {
-    navigate(`/rank?id=${id}`);
-  }
 
   function goBack() {
     navigate(-1);
@@ -117,20 +112,6 @@ function PasswordChangePage() {
                   sx={{ mr: 2 }}
                   onClick={() => {
                     console.log("AppbarInProfile");
-                    goToRank();
-                  }}
-                >
-                  <FormatListNumberedIcon />
-                </IconButton>
-
-                <IconButton
-                  size="large"
-                  edge="start"
-                  aria-label="menu"
-                  style={{ width: "50px", color: "blue" }}
-                  sx={{ mr: 2 }}
-                  onClick={() => {
-                    console.log("AppbarInProfile");
                     goBack();
                   }}
                 >
@@ -139,7 +120,7 @@ function PasswordChangePage() {
 
                 <div style={{ padding: "5px" }}></div>
 
-                <Link to={"/"}>
+                <Link to={"/"} onClick={()=>localStorage.clear()}>
                   <IconButton
                     size="large"
                     edge="start"

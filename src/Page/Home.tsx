@@ -111,7 +111,7 @@ function HomePage() {
       name:win.name,
       beforeScore:win.score,
       score:w,
-      newScore:win.score+w
+      newScore:w
     }
 
     const objImgLoss:ImageHome = {
@@ -119,7 +119,7 @@ function HomePage() {
       picture:loss.path,
       name:loss.name,
       beforeScore:loss.score,
-      score:loss.score+l,
+      score:Number(calculateScore(l)),
       newScore:Number(calculateScore(l))
     }
 
@@ -181,7 +181,7 @@ function HomePage() {
     <>
       <ButtonAppBar />
       {loading ? (
-        <div>
+        <div style={{width:'100%',height:'80vh',display:'flex',flexDirection:'column',justifyContent:'center',alignContent:'center'}}>
           <CircularProgress />
         </div>
       ) : (
@@ -230,8 +230,8 @@ function HomePage() {
                       variant="h5"
                       component="div"
                     >
-                      {e?.name} <br />
-                      {e?.score}
+                      {e?.name}
+
                     </Typography>
                   </CardContent>
                 </CardActionArea>
@@ -286,7 +286,7 @@ function HomePage() {
                   <p>EWin: 1 / (1 + 10 ** (({img2?.beforeScore} - {img1?.beforeScore}) / 400));</p>
                   <p>ค่าคาดหวังคือ:{img1?.expextation}</p>
                   <p>คะแนนเดิมมีอยู่:{img1?.beforeScore}</p>
-                  <p>ได้คะแนนเพิ่มขึ้น:{img1?.score}</p>
+                  <p>ได้คะแนนเพิ่มขึ้น:{Number(img1?.score)-Number(img1?.beforeScore)}</p>
                   <p>win: ({img1?.newScore} + K * (1 - {img1?.score}));</p>
                   <p>คะแนนใหม่ที่ได้คือ:{img1?.newScore}</p>
                 </Box>
@@ -323,7 +323,7 @@ function HomePage() {
                   <p>ELoss: 1 / (1 + 10 ** (({img1?.beforeScore} - {img2?.beforeScore}) / 400));</p>
                   <p>ค่าคาดหวังคือ:{img2?.expextation}</p>
                   <p>คะแนนเดิมมีอยู่:{img2?.beforeScore}</p>
-                  <p>คะแนนลดลง:{img2?.score}</p>
+                  <p>คะแนนลดลง:{Number(img2?.beforeScore)-Number(img2?.score)}</p>
                   <p>loss: ({img2?.newScore} + K * (1 - {img2?.score}));</p>
                   <p>คะแนนที่เหลือ:{img2?.newScore}</p>
                 </Box>
