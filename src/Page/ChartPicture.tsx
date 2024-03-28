@@ -28,23 +28,12 @@ function ChartPicture() {
   const [picture, setPicture] = useState<PictureGetResponse[]>();
   const [voteScore, setVoteScore] = useState<VoteChart7Day>();
   const scoreData = voteScore?.voteChart?.map((item) => item?.[0]?.score) || [];
-  const dateTimes = voteScore?.voteChart?.map((item) => {
-    let dateTime;
-    if (item?.[0]?.date_time) {
-      dateTime = new Date(item[0].date_time);
-    } else {
-      dateTime = new Date(); // วันที่ปัจจุบัน
-    }
-
-    const day = dateTime.getDate(); // วัน
-    const month = dateTime.getMonth() + 1; // เดือน (เพิ่ม 1 เพราะเดือนเริ่มที่ 0)
-    const year = dateTime.getFullYear(); // ปี
-  
-    return `${day}-${month}-${year}`; // รวมวัน เดือน ปี เข้าด้วยกัน
-  }) || [];
+  const dateTimes1 = voteScore?.voteChart?.map((item) => item?.[0]?.date_time.split("T")[0])
   
   
-
+//  console.log(dateTimes);
+ console.log(scoreData);
+ 
   
 
   const navigate = useNavigate();
@@ -118,7 +107,7 @@ function ChartPicture() {
                   style={{ width: "50px" }}
                   sx={{ mr: 2 }}
                 >
-                  <Link to={"/"}>
+                  <Link to={`/homeAfterLog?id=${id}`}>
                     <HomeIcon />
                   </Link>
                 </IconButton>
@@ -188,13 +177,13 @@ function ChartPicture() {
                 </Card>
                 <Typography variant="h5">ชื่อ: {picture?.[0].name}</Typography>
                 <Typography variant="h5">คะแนนปัจจุบัน: {picture?.[0].score}</Typography>
-                <Typography variant="h5">การเปลี่ยนแปลงจากเมื่อวาน: {chkScore(Number(picture?.[0].score) - scoreData?.[1])}</Typography>
+                <Typography variant="h5">การเปลี่ยนแปลงจากเมื่อวาน: {chkScore(Number(scoreData?.[0])-Number(scoreData?.[1]))}</Typography>
               </Grid>
               <Grid xs={6}>
                 <BarChart
-                  series={[{ data: scoreData }]}
+                  series={[{ data: [scoreData?.[0],scoreData?.[1],scoreData?.[2],scoreData?.[3],scoreData?.[4],scoreData?.[5],scoreData?.[6]] }]}
                   height={500}
-                  xAxis={[{ data: dateTimes, scaleType: "band" }]}
+                  xAxis={[{ data: dateTimes1, scaleType: "band" }]}
                 />
               </Grid>
             </Grid>

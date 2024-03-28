@@ -225,7 +225,7 @@ export default function HomePageAfterLogin() {
                 {user?.[0]?.name}
               </Typography>
               <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                {user?.[0]?.name}
+                Vote Page
               </Typography>
               <span></span>
               <IconButton
@@ -319,8 +319,7 @@ export default function HomePageAfterLogin() {
                       variant="h5"
                       component="div"
                     >
-                      {e?.name} <br />
-                      {e?.score}
+                      {e?.name}
                     </Typography>
                   </CardContent>
                 </CardActionArea>

@@ -46,7 +46,7 @@ function RankPage() {
       console.log(resRank);
       console.log(resRankYesterday);
 
-      resRank.map((e) => {
+      resRank.map((e,i=1) => {
         const index = resRankYesterday.findIndex(
           (item) => item.picture_id === e.id
         );
@@ -63,12 +63,15 @@ function RankPage() {
           );
           const rank = calLevel(diff);
           console.log("Rank: " + rank);
-
-          // setRankLevel([rank])
           level.push(rank);
         } else {
-          console.log("Index: -1");
+          const rank = Number(resRankYesterday.length)-i
+          console.log("Rank: "+rank);
+          level.push("+"+rank);
         }
+        i+=1
+        console.log("I: "+i);
+        
       });
 
       setRankLevel(level);

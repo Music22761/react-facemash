@@ -114,7 +114,7 @@ function ProfileUserPage() {
                   {user?.map((e) => e.name)}
                 </Typography>
                 <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                  {user?.map((e) => e.email)}
+                  Profile User
                 </Typography>
                 <span></span>
 

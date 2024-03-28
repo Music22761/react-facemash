@@ -9,13 +9,12 @@ import {
   Avatar,
   CircularProgress,
 } from "@mui/material";
-import { Box, styled } from "@mui/system";
+import { Box } from "@mui/system";
 import EmailIcon from "@mui/icons-material/Email";
 import HomeIcon from "@mui/icons-material/Home";
 import BadgeIcon from "@mui/icons-material/Badge";
 import LockIcon from "@mui/icons-material/Lock";
 import { Link, useNavigate } from "react-router-dom";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 // import { useRef } from "react";
 
 import "../css/Register.css";
@@ -23,21 +22,10 @@ import { SetStateAction, useEffect, useState } from "react";
 import { Service } from "../api/service";
 import { UsersGetRespose } from "../model/UserModel";
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const [imgUrl, setImgUrl] = useState<string>();
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [upload, setUpload] = useState<FormData>();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -64,22 +52,6 @@ function RegisterPage() {
 
     uploadImageOnFireBase(upload!, name, email, password); //ส่งไป upload ใน fireBase
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFileChange = (event: any) => {
-    const file = event.target.files[0];
-    const imageUrl = URL.createObjectURL(file);
-
-    //ทำไฟล์เป็น formData
-    const formData = new FormData();
-    formData.append("file", file);
-
-    console.log("File:" + formData);
-    console.log("IMage:" + imageUrl);
-
-    setUpload(formData); //เก็บไว้ใน setUpload
-    setImgUrl(imageUrl);
-  };
 
   const handleNameRegister = (event: {
     target: { value: SetStateAction<string> };
@@ -135,6 +107,33 @@ function RegisterPage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    //ทำไฟล์เป็น formData
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setUpload(formData);
+
+    reader.onloadend = () => {
+      setImageUrl(reader.result as string);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const openFileInput = () => {
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -158,7 +157,7 @@ function RegisterPage() {
                   </Link>
                 </IconButton>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  News
+                  Cat Mash
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -170,7 +169,8 @@ function RegisterPage() {
               flexDirection: "column",
               justifyContent: "center",
               width: "50vh",
-              height: "80vh",
+              height: "70vh",
+              minHeight:'600px',
               backgroundColor: "pink",
               alignItems: "center",
               borderRadius: "30px",
@@ -178,30 +178,32 @@ function RegisterPage() {
           >
             <h2>Sign In</h2>
             <Avatar
-              style={{ width: "150px", height: "150px" }}
-              src={
-                imgUrl ||
-                "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"
-              }
-              alt="Selected Image"
-            />
-            <Button
-              component="label"
-              role={undefined}
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-              style={{}}
-            >
-              Upload
-              <VisuallyHiddenInput
-                type="file"
-                id="file"
-                onChange={handleFileChange}
-              />
-            </Button>
+                  style={{
+                    marginTop: "20px",
+                    width: "150px",
+                    height: "150px",
+                    border: "5px solid black",
+                    backgroundColor: "white",
+                    cursor: "pointer",
+                    transition: "transform 0.3s ease-in-out",
+                  }}
+                  src={
+                    imageUrl ||
+                    user?.[0]?.picture ||
+                    "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-512.png"
+                  }
+                  alt="Selected Image"
+                  onClick={openFileInput}
+                />
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
 
-            <div>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
               <TextField
                 placeholder="name"
                 sx={{ m: 1, width: "90%" }}

@@ -26,6 +26,8 @@ function InfoPicture() {
   const [user, setUser] = useState<UsersGetRespose[]>();
   const [picture, setPicture] = useState<PictureGetResponse[]>();
   const navigate = useNavigate();
+  console.log(user);
+  
 
   const services = new Service();
 
@@ -87,7 +89,11 @@ function InfoPicture() {
               </Link>
             </IconButton>
             <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-              {user?.[0]?.name}
+              Cat Mash
+            </Typography>
+            <span></span>
+            <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+              Info Picture
             </Typography>
             <span></span>
 
@@ -149,14 +155,8 @@ function InfoPicture() {
           backgroundColor: "pink",
         }}
       >
-        <Typography
-          variant="h4"
-          style={{ marginTop: "20px", marginBottom: "20px" }}
-        >
-          Picture Info
-        </Typography>
 
-        <Card style={{ width: '60%', height: '60%', display: 'flex',flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}>
+        <Card style={{ width: '90%', height: '80%', display: 'flex',flexDirection:'column', alignItems: 'center', justifyContent: 'center'}}>
           <Card sx={{ width: "85%" }}>
             <CardMedia
               component="img"
